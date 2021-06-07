@@ -3,6 +3,10 @@ import argparse
 from conventional_commits.checker import ConventionalCommitMessageChecker
 
 
+RED = '\033[0;31m'
+NO_COLOUR = '\033[0m'
+
+
 def main(argv=None):
     """Check if the git commit message adheres to the Conventional Commits standard and additional rules.
 
@@ -19,7 +23,8 @@ def main(argv=None):
 
     try:
         ConventionalCommitMessageChecker().check_commit_message(commit_message_lines)
-    except ValueError:
+    except ValueError as e:
+        print(f"{RED}COMMIT MESSAGE FAILED CHECKS:{NO_COLOUR} {e}")
         return 1
 
     return 0
