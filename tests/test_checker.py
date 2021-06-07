@@ -84,7 +84,7 @@ class TestCheckCommitMessage(unittest.TestCase):
                 "#",
                 "# Changes to be committed:",
                 "#       modified:   pre_commit_hooks/conventional_commits/checker.py",
-                "#       modified:   pre_commit_hooks/tests/test_check_commit_message.py",
+                "#       modified:   pre_commit_hooks/tests/test_checker.py",
                 "#",
             ]
         )
