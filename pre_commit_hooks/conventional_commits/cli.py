@@ -1,10 +1,10 @@
 import argparse
 
-from conventional_commits.checker import ConventionalCommitMessageChecker
+from pre_commit_hooks.conventional_commits.checker import ConventionalCommitMessageChecker
 
 
-RED = '\033[0;31m'
-NO_COLOUR = '\033[0m'
+RED = "\033[0;31m"
+NO_COLOUR = "\033[0m"
 
 
 def main(argv=None):
@@ -14,7 +14,7 @@ def main(argv=None):
     :return int: the return code - 0 if the message passes, 1 if it fails
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('commit_message_path', type=str, help='Path to current git commit message.')
+    parser.add_argument("commit_message_path", type=str, help="Path to current git commit message.")
 
     args = parser.parse_args(argv)
 
@@ -30,5 +30,5 @@ def main(argv=None):
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     exit(main())

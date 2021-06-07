@@ -58,6 +58,6 @@ repos:
           - '^release/(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$'
 
   - repo: https://github.com/octue/pre-commit-hooks
-    rev: feature/add-conventional-commit-pre-commit-package
+    rev: 0.0.1
     hooks:
       - id: check-commit-message-is-conventional

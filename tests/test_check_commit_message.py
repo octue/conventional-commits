@@ -1,9 +1,9 @@
 import unittest
-from conventional_commits.checker import ConventionalCommitMessageChecker
+
+from pre_commit_hooks.conventional_commits.checker import ConventionalCommitMessageChecker
 
 
 class TestCheckCommitMessage(unittest.TestCase):
-
     def test_empty_commit_message_raises_error(self):
         with self.assertRaises(ValueError):
             ConventionalCommitMessageChecker().check_commit_message([])
