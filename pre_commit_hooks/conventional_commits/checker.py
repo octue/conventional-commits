@@ -1,7 +1,24 @@
 import re
 
 
-ALLOWED_COMMIT_CODES = {"FEA", "IMP", "FIX", "OPS", "DEP", "REF", "TST", "CLN", "OPT", "MRG", "REV", "CHO", "WIP"}
+ALLOWED_COMMIT_CODES = {
+    "FEA",
+    "IMP",
+    "FIX",
+    "OPS",
+    "DEP",
+    "REF",
+    "TST",
+    "CLN",
+    "OPT",
+    "MRG",
+    "REV",
+    "CHO",
+    "WIP",
+    "DOC",
+    "LOG",
+}
+
 CODE_SEPARATOR = ": "
 
 
@@ -103,7 +120,7 @@ class ConventionalCommitMessageChecker:
 
         if not re.compile(self.valid_header_ending_pattern).match(header[-1]):
             raise ValueError(
-                f"The commit header must end in a character matching the pattern {self.valid_header_ending_pattern}; "
+                f"The commit header must end in a character matching the pattern {self.valid_header_ending_pattern!r}; "
                 f"received {header!r}."
             )
 
