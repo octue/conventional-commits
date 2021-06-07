@@ -1,5 +1,5 @@
 import unittest
-from pre_commit_conventional_commit_message.check_commit_message import ConventionalCommitMessageChecker
+from pre_commit_conventional_commit_message.checker import ConventionalCommitMessageChecker
 
 
 class TestCheckCommitMessage(unittest.TestCase):

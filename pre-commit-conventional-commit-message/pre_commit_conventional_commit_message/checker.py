@@ -1,7 +1,4 @@
 import re
-import argparse
-import os
-import subprocess
 
 
 ALLOWED_COMMIT_CODES = {"FEA", "IMP", "FIX", "OPS", "DEP", "REF", "TST", "CLN", "OPT", "MRG", "REV", "CHO"}
