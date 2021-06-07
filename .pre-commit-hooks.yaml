@@ -4,3 +4,4 @@
     language: python
     entry: check-commit-message
     stages: [commit-msg]
+    always_run: true
