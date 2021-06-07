@@ -1,6 +1,6 @@
 import os
 import subprocess
-
+import argparse
 from pre_commit_hooks.conventional_commits.checker import ConventionalCommitMessageChecker
 
 
@@ -8,7 +8,7 @@ RED = "\033[0;31m"
 NO_COLOUR = "\033[0m"
 
 
-def main():
+def main(argv=None):
     """Check if the git commit message adheres to the Conventional Commits standard and additional rules.
 
     :param iter(str)|None argv: iterable containing single argument, which should be the path to a git commit message
@@ -21,8 +21,37 @@ def main():
     with open(os.path.join(repository_path, ".git", "COMMIT_EDITMSG")) as f:
         commit_message_lines = f.read().splitlines()
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--maximum-header-length",
+        default=72,
+        type=int
+    )
+    parser.add_argument(
+        "--valid-header-ending-pattern",
+        default=r"[A-Za-z\d]",
+        type=str
+    )
+    parser.add_argument(
+        "--require-body",
+        default=False,
+        type=bool
+    )
+    parser.add_argument(
+        "--maximum-body-line-length",
+        default=72,
+        type=int
+    )
+
+    args = parser.parse_args(argv)
+
     try:
-        ConventionalCommitMessageChecker().check_commit_message(commit_message_lines)
+        ConventionalCommitMessageChecker(
+            maximum_header_length=args.maximum_header_length,
+            valid_header_ending_pattern=args.valid_header_ending_pattern,
+            require_body=args.require_body,
+            maximum_body_line_length=args.maximum_body_line_length,
+        ).check_commit_message(commit_message_lines)
     except ValueError as e:
         print(f"{RED}COMMIT MESSAGE FAILED CHECKS:{NO_COLOUR} {e}")
         return 1
