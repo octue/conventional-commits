@@ -1,3 +1,5 @@
+import os
+import subprocess
 import argparse
 
 from pre_commit_hooks.conventional_commits.checker import ConventionalCommitMessageChecker
@@ -13,12 +15,13 @@ def main(argv=None):
     :param iter(str)|None argv: iterable containing single argument, which should be the path to a git commit message
     :return int: the return code - 0 if the message passes, 1 if it fails
     """
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--commit_message_path", type=str, help="Path to current git commit message.")
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("--commit_message_path", type=str, help="Path to current git commit message.")
+    #
+    # args = parser.parse_args(argv)
+    repository_path = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True).stdout.decode().strip()
 
-    args = parser.parse_args(argv)
-
-    with open(args.commit_message_path) as f:
+    with open(os.path.join(repository_path, ".git", "COMMIT_EDITMSG")) as f:
         commit_message_lines = f.read().splitlines()
 
     try:
