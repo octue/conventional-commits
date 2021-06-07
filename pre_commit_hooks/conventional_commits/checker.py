@@ -1,7 +1,7 @@
 import re
 
 
-ALLOWED_COMMIT_CODES = {"FEA", "IMP", "FIX", "OPS", "DEP", "REF", "TST", "CLN", "OPT", "MRG", "REV", "CHO"}
+ALLOWED_COMMIT_CODES = {"FEA", "IMP", "FIX", "OPS", "DEP", "REF", "TST", "CLN", "OPT", "MRG", "REV", "CHO", "WIP"}
 CODE_SEPARATOR = ": "
 
 
