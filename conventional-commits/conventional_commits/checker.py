@@ -18,7 +18,7 @@ class ConventionalCommitMessageChecker:
 
     See https://www.conventionalcommits.org/en/v1.0.0-beta.4/ for more information.
 
-    :param iter(str) allowed_commit_codes: allowed codes for the very beginning of the header
+    :param iter(str)|None allowed_commit_codes: allowed codes for the very beginning of the header
     :param int maximum_header_length: maximum number of characters allowed in the header
     :param str valid_header_ending_pattern: regex pattern of allowed endings for the header
     :param bool require_body: if True, a body is required in the commit message
