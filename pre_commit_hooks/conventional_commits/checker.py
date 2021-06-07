@@ -30,10 +30,10 @@ class ConventionalCommitMessageChecker:
       * Is no longer than the maximum header length
       * Ends in a valid pattern
     * The body:
-      * Is required or not (as specified)
+      * Is present if required
       * Has lines no longer than the maximum body line length
 
-    See https://www.conventionalcommits.org/en/v1.0.0-beta.4/ for more information.
+    See https://www.conventionalcommits.org for more information.
 
     :param iter(str)|None allowed_commit_codes: allowed codes for the very beginning of the header
     :param int maximum_header_length: maximum number of characters allowed in the header
