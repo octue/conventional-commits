@@ -5,3 +5,4 @@
     entry: check-commit-message
     stages: [commit-msg]
     always_run: true
+    args: [commit_message_path]
