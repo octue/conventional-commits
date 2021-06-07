@@ -3,4 +3,3 @@
     description: This pre-commit hook checks if the commit message adheres to the Conventional Commit standard, and fails if it doesn't.
     language: python
     entry: check-commit-message
-    stages: [commit-msg]
