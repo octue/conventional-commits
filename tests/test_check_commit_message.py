@@ -70,8 +70,8 @@ class TestCheckCommitMessage(unittest.TestCase):
                 "#   (use 'git push' to publish your local commits)",
                 "#",
                 "# Changes to be committed:",
-                "#       modified:   conventional-commits/conventional_commits/checker.py",
-                "#       modified:   conventional-commits/tests/test_check_commit_message.py",
+                "#       modified:   pre_commit_hooks/conventional_commits/checker.py",
+                "#       modified:   pre_commit_hooks/tests/test_check_commit_message.py",
                 "#",
             ]
         )
