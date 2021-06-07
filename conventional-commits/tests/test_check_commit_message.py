@@ -57,3 +57,24 @@ class TestCheckCommitMessage(unittest.TestCase):
             ConventionalCommitMessageChecker(require_body=True).check_commit_message(
                 ["FIX: Fix this bug", "", "an okay line", f"{'a' * 80}"]
             )
+
+    def test_comments_lines_are_ignored(self):
+        ConventionalCommitMessageChecker().check_commit_message(
+            [
+                "FIX: Fix this bug",
+                "# Please enter the commit message for your changes. Lines starting",
+                "# with '#' will be ignored, and an empty message aborts the commit.",
+                "#",
+                "# On branch feature/add-conventional-commit-pre-commit-package",
+                "# Your branch is ahead of 'origin/feature/add-conventional-commit-pre-commit-package' by 2 commits.",
+                "#   (use 'git push' to publish your local commits)",
+                "#",
+                "# Changes to be committed:",
+                "#       modified:   conventional-commits/conventional_commits/checker.py",
+                "#       modified:   conventional-commits/tests/test_check_commit_message.py",
+                "#",
+            ]
+        )
+
+    def test_trailing_newline_is_ignored(self):
+        ConventionalCommitMessageChecker().check_commit_message(["FIX: Fix this bug", ""])

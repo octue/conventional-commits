@@ -47,6 +47,14 @@ class ConventionalCommitMessageChecker:
         :raise ValueError: if the commit fails any of the checks
         :return None:
         """
+        comment_line_indexes = [i for i, line in enumerate(commit_message_lines) if line.startswith("#")]
+
+        number_of_comment_lines_deleted = 0
+        for index in comment_line_indexes:
+            commit_message_lines.pop(index - number_of_comment_lines_deleted)
+            number_of_comment_lines_deleted += 1
+
+
         if len(commit_message_lines) == 0:
             raise ValueError("The commit message should not be empty.")
 
