@@ -15,7 +15,7 @@ def main(argv):
     :return int: the return code - 0 if the message passes, 1 if it fails
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("commit_message_path", type=str, help="Path to current git commit message.")
+    parser.add_argument("--commit_message_path", type=str, help="Path to current git commit message.")
 
     args = parser.parse_args(argv)
 
