@@ -1,4 +1,3 @@
-import sys
 import argparse
 
 from pre_commit_hooks.conventional_commits.checker import ConventionalCommitMessageChecker
@@ -8,7 +7,7 @@ RED = "\033[0;31m"
 NO_COLOUR = "\033[0m"
 
 
-def main(argv):
+def main(argv=None):
     """Check if the git commit message adheres to the Conventional Commits standard and additional rules.
 
     :param iter(str)|None argv: iterable containing single argument, which should be the path to a git commit message
@@ -32,5 +31,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    args = sys.argv[1:]
-    exit(main(args))
+    exit(main())
