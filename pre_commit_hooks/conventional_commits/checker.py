@@ -54,7 +54,6 @@ class ConventionalCommitMessageChecker:
             commit_message_lines.pop(index - number_of_comment_lines_deleted)
             number_of_comment_lines_deleted += 1
 
-
         if len(commit_message_lines) == 0:
             raise ValueError("The commit message should not be empty.")
 
@@ -105,7 +104,8 @@ class ConventionalCommitMessageChecker:
         if not re.compile(self.valid_header_ending_pattern).match(header[-1]):
             raise ValueError(
                 f"The commit header must end in a character matching the pattern {self.valid_header_ending_pattern}; "
-                f"received {header!r}.")
+                f"received {header!r}."
+            )
 
     def _check_body(self, body):
         """Check that the body conforms to the given rules.
