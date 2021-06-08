@@ -59,6 +59,16 @@ Use this hook in your repository by adding it to your `.pre-commit-config.yaml` 
           - --maximum-body-line-length=72
 ```
 
+Then, install `pre-commit` if you haven't already:
+```shell
+pip install pre-commit
+```
+
+Finally, install the hook:
+```shell
+pre-commit install && pre-commit install -t commit-msg
+```
+
 ### Divergence from Conventional Commits specification
 Note that while this hook complies with nearly all of the Conventional Commits specification, it is diverges slightly
 in the following ways:
