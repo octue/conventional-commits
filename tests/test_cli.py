@@ -5,21 +5,21 @@ from pre_commit_hooks.conventional_commits.cli import main
 
 
 class TestCLI(unittest.TestCase):
-    def test_main_with_invalid_commit_message(self):
+    def test_with_invalid_commit_message(self):
         """Test that an error is raised by the entrypoint when an invalid commit message is given."""
         with patch("pre_commit_hooks.conventional_commits.cli.open", mock_open(read_data="blah\nawful commit message")):
             return_code = main()
 
         self.assertEqual(return_code, 1)
 
-    def test_main_with_valid_commit_message(self):
+    def test_with_valid_commit_message(self):
         """Test that the entrypoint works with a valid commit message."""
         with patch("pre_commit_hooks.conventional_commits.cli.open", mock_open(read_data="FIX: Fix a bug")):
             return_code = main()
 
         self.assertEqual(return_code, 0)
 
-    def test_main_with_different_allowed_commit_codes(self):
+    def test_with_different_allowed_commit_codes(self):
         """Test that custom commit codes can be provided to replace the default set."""
         custom_commit_codes = "ABC", "DEF", "GHI"
 
@@ -34,7 +34,7 @@ class TestCLI(unittest.TestCase):
             return_code = main([f"--allowed-commit-code={','.join(custom_commit_codes)}"])
             self.assertEqual(return_code, 1)
 
-    def test_main_with_additional_allowed_commit_codes(self):
+    def test_with_additional_allowed_commit_codes(self):
         """Test that additional commit codes can be provided to augment the default set."""
         additional_code = "ABC"
 
