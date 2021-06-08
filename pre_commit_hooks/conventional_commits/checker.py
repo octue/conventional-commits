@@ -19,6 +19,9 @@ ALLOWED_COMMIT_CODES = {
 
 CODE_SEPARATOR = ": "
 
+BREAKING_CHANGE_INDICATORS = {"BREAKING-CHANGE", "BREAKING CHANGE"}
+BREAKING_CHANGE_PATTERN = rf"({'|'.join(BREAKING_CHANGE_INDICATORS)}): ([A-Za-z\d]+)"
+
 
 class ConventionalCommitMessageChecker:
     """A class that checks whether the given commit message adheres to Conventional Commits standard, as well as the
@@ -146,3 +149,26 @@ class ConventionalCommitMessageChecker:
                     f"The maximum line length of the body is {self.maximum_body_line_length} characters; the line "
                     f"{line!r} is {len(line)} characters."
                 )
+
+            self._validate_breaking_change_descriptions(line)
+
+    def _validate_breaking_change_descriptions(self, line):
+        """Check that any breaking change indicators (one of "BREAKING CHANGE" or "BREAKING-CHANGE") are in uppercase
+        and followed by a colon and space (": ") preceding a description.
+
+        :param str line:
+        :raise ValueError: if the breaking change indicator is invalid
+        :return None:
+        """
+        breaking_change_error = ValueError(
+            f"Breaking changes must be denoted by one of {BREAKING_CHANGE_INDICATORS!r} in uppercase followed by ': ' "
+            f"and a description e.g. 'BREAKING CHANGE: Change MyPublicClass interface'; received "
+            f"{line!r}."
+        )
+
+        if any(indicator.lower() in line for indicator in BREAKING_CHANGE_INDICATORS):
+            raise breaking_change_error
+
+        if any(indicator in line for indicator in BREAKING_CHANGE_INDICATORS):
+            if not re.match(BREAKING_CHANGE_PATTERN, line):
+                raise breaking_change_error

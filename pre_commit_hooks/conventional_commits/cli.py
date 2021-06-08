@@ -1,6 +1,7 @@
+import argparse
 import os
 import subprocess
-import argparse
+
 from pre_commit_hooks.conventional_commits.checker import ConventionalCommitMessageChecker
 
 
@@ -22,26 +23,10 @@ def main(argv=None):
         commit_message_lines = f.read().splitlines()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--maximum-header-length",
-        default=72,
-        type=int
-    )
-    parser.add_argument(
-        "--valid-header-ending-pattern",
-        default=r"[A-Za-z\d]",
-        type=str
-    )
-    parser.add_argument(
-        "--require-body",
-        default=False,
-        type=bool
-    )
-    parser.add_argument(
-        "--maximum-body-line-length",
-        default=72,
-        type=int
-    )
+    parser.add_argument("--maximum-header-length", default=72, type=int)
+    parser.add_argument("--valid-header-ending-pattern", default=r"[A-Za-z\d]", type=str)
+    parser.add_argument("--require-body", default=False, type=bool)
+    parser.add_argument("--maximum-body-line-length", default=72, type=int)
 
     args = parser.parse_args(argv)
 
@@ -57,7 +42,3 @@ def main(argv=None):
         return 1
 
     return 0
-
-
-if __name__ == "__main__":
-    exit(main())

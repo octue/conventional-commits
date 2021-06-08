@@ -92,3 +92,40 @@ class TestCheckCommitMessage(unittest.TestCase):
     def test_trailing_newline_is_ignored(self):
         """Test that a trailing newline in the commit message is ignored."""
         ConventionalCommitMessageChecker().check_commit_message(["FIX: Fix this bug", ""])
+
+    def test_lower_case_breaking_change_indicators_raise_error(self):
+        """Test that lowercase breaking change indicators result in an error."""
+        with self.assertRaises(ValueError):
+            ConventionalCommitMessageChecker().check_commit_message(["FIX: Fix this bug", "", "breaking change: blah"])
+
+        with self.assertRaises(ValueError):
+            ConventionalCommitMessageChecker().check_commit_message(["FIX: Fix this bug", "", "breaking-change: blah"])
+
+    def test_breaking_change_indicators_without_full_code_separator_raise_error(self):
+        """Test that valid breaking change indicators without the full code separator raise an error."""
+        for breaking_change_message in (
+            "BREAKING CHANGE:blah",
+            "BREAKING-CHANGE:blah",
+            "BREAKING CHANGE blah",
+            "BREAKING-CHANGE blah",
+        ):
+            with self.assertRaises(ValueError):
+                ConventionalCommitMessageChecker().check_commit_message(
+                    ["FIX: Fix this bug", "", breaking_change_message]
+                )
+
+    def test_breaking_change_indicator_with_no_message_raises_error(self):
+        """Test that valid breaking change indicators without the full code separator raise an error."""
+        for breaking_change_message in (
+            "BREAKING CHANGE: ",
+            "BREAKING-CHANGE: ",
+        ):
+            with self.assertRaises(ValueError):
+                ConventionalCommitMessageChecker().check_commit_message(
+                    ["FIX: Fix this bug", "", breaking_change_message]
+                )
+
+    def test_breaking_change_indicators(self):
+        """Test that valid breaking change indicators with the full code separator are ok."""
+        ConventionalCommitMessageChecker().check_commit_message(["FIX: Fix this bug", "", "BREAKING CHANGE: blah"])
+        ConventionalCommitMessageChecker().check_commit_message(["FIX: Fix this bug", "", "BREAKING-CHANGE: blah"])
