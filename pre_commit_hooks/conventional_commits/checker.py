@@ -64,12 +64,7 @@ class ConventionalCommitMessageChecker:
         :raise ValueError: if the commit fails any of the checks
         :return None:
         """
-        comment_line_indexes = [i for i, line in enumerate(commit_message_lines) if line.startswith("#")]
-
-        number_of_comment_lines_deleted = 0
-        for index in comment_line_indexes:
-            commit_message_lines.pop(index - number_of_comment_lines_deleted)
-            number_of_comment_lines_deleted += 1
+        self._remove_comment_lines(commit_message_lines)
 
         if len(commit_message_lines) == 0:
             raise ValueError("The commit message should not be empty.")
@@ -95,6 +90,19 @@ class ConventionalCommitMessageChecker:
             raise ValueError("There should be blank line between the header and the body.")
 
         self._check_body(body)
+
+    def _remove_comment_lines(self, commit_message_lines):
+        """Remove comment lines so they are ignored by the other steps of the checker.
+
+        :param iter(str) commit_message_lines:
+        :return iter(str):
+        """
+        comment_line_indexes = [i for i, line in enumerate(commit_message_lines) if line.startswith("#")]
+
+        number_of_comment_lines_deleted = 0
+        for index in comment_line_indexes:
+            commit_message_lines.pop(index - number_of_comment_lines_deleted)
+            number_of_comment_lines_deleted += 1
 
     def _check_header(self, header):
         """Check that the header conforms to the given rules.
