@@ -2,21 +2,19 @@ import re
 
 
 ALLOWED_COMMIT_CODES = {
-    "FEA": "A new feature.",
-    "IMP": "An improvement to an existing feature.",
-    "FIX": "A bug fix.",
-    "OPS": "An operational/devops change e.g. to continuous integration scripts.",
-    "DEP": "A change in dependencies.",
-    "REF": "Refactoring of existing code.",
-    "TST": "Anything related to testing.",
-    "CLN": "A clean-up that doesn't change the way the code works (e.g. removing unused code or files)",
-    "OPT": "An optimisation.",
-    "MRG": "A merge commit.",
-    "REV": "A reversion e.g. a `git revert` commit.",
-    "CHO": "A chore e.g. updating a menial configuration file.",
+    "FEA": "A new feature",
+    "ENH": "An improvement or optimisation to an existing feature",
+    "FIX": "A bug fix",
+    "OPS": "An operational/devops/git change e.g. to continuous integration scripts or GitHub templates",
+    "DEP": "A change in dependencies",
+    "REF": "A refactor of existing code",
+    "TST": "A change to tests or the testing framework",
+    "MRG": "A merge commit",
+    "REV": "A reversion e.g. a `git revert` commit",
+    "CHO": "A chore e.g. updating a menial configuration file or .gitignore file",
     "WIP": "A work-in-progress commit (usually to be avoided, but makes sense for e.g. trying changes in git-based CI)",
-    "DOC": "A change to documentation.",
-    "LOG": "A change to logging.",
+    "DOC": "A change to documentation, docstrings, or documentation generation",
+    "STY": "A change to code style specifications or to code to conform to new style",
 }
 
 CODE_SEPARATOR = ": "
