@@ -26,6 +26,7 @@ Use this hook in your repository by adding it to your `.pre-commit-config.yaml` 
       - id: check-commit-message-is-conventional
         stages: [commit-msg]
         args:
+          - --additional-commit-codes=ABC,DEF,GHI
           - --maximum-header-length=72
           - --valid-header-ending-pattern=[A-Za-z\d]
           - --require-body=0

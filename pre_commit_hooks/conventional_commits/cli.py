@@ -2,7 +2,7 @@ import argparse
 import os
 import subprocess
 
-from pre_commit_hooks.conventional_commits.checker import ConventionalCommitMessageChecker
+from pre_commit_hooks.conventional_commits.checker import ALLOWED_COMMIT_CODES, ConventionalCommitMessageChecker
 
 
 RED = "\033[0;31m"
@@ -23,6 +23,8 @@ def main(argv=None):
         commit_message_lines = f.read().splitlines()
 
     parser = argparse.ArgumentParser()
+    parser.add_argument("--allowed-commit-codes", default=None)
+    parser.add_argument("--additional-commit-codes", default=None)
     parser.add_argument("--maximum-header-length", default=72, type=int)
     parser.add_argument("--valid-header-ending-pattern", default=r"[A-Za-z\d]", type=str)
     parser.add_argument("--require-body", default=False, type=bool)
@@ -31,7 +33,18 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     try:
+        if args.allowed_commit_codes:
+            allowed_commit_codes = {code: None for code in args.allowed_commit_codes.split(",")}
+        elif args.additional_commit_codes:
+            allowed_commit_codes = {
+                **ALLOWED_COMMIT_CODES,
+                **{code: None for code in args.additional_commit_codes.split(",")},
+            }
+        else:
+            allowed_commit_codes = None
+
         ConventionalCommitMessageChecker(
+            allowed_commit_codes=allowed_commit_codes,
             maximum_header_length=args.maximum_header_length,
             valid_header_ending_pattern=args.valid_header_ending_pattern,
             require_body=args.require_body,

@@ -19,6 +19,35 @@ class TestCLI(unittest.TestCase):
 
         self.assertEqual(return_code, 0)
 
+    def test_main_with_different_allowed_commit_codes(self):
+        """Test that custom commit codes can be provided to replace the default set."""
+        custom_commit_codes = "ABC", "DEF", "GHI"
+
+        # Ensure the custom commit codes work.
+        for code in custom_commit_codes:
+            with patch("pre_commit_hooks.conventional_commits.cli.open", mock_open(read_data=f"{code}: Do a thing")):
+                return_code = main([f"--allowed-commit-codes={','.join(custom_commit_codes)}"])
+                self.assertEqual(return_code, 0)
+
+        # Ensure a default code now fails.
+        with patch("pre_commit_hooks.conventional_commits.cli.open", mock_open(read_data="DOC: Update docs")):
+            return_code = main([f"--allowed-commit-code={','.join(custom_commit_codes)}"])
+            self.assertEqual(return_code, 1)
+
+    def test_main_with_additional_allowed_commit_codes(self):
+        """Test that additional commit codes can be provided to augment the default set."""
+        additional_code = "ABC"
+
+        # Ensure the additional code works.
+        with patch("pre_commit_hooks.conventional_commits.cli.open", mock_open(read_data="ABC: Do a thing")):
+            return_code = main([f"--additional-commit-codes={additional_code}"])
+            self.assertEqual(return_code, 0)
+
+        # Ensure a default code still works.
+        with patch("pre_commit_hooks.conventional_commits.cli.open", mock_open(read_data="DOC: Update docs")):
+            return_code = main([f"--additional-commit-codes={additional_code}"])
+            self.assertEqual(return_code, 0)
+
     def test_with_maximum_header_length_violated(self):
         """Test an error is raised when the specified maximum header length is violated."""
         with patch("pre_commit_hooks.conventional_commits.cli.open", mock_open(read_data="FIX: Fix a bug")):
