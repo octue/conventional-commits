@@ -1,3 +1,7 @@
+[![codecov](https://codecov.io/gh/octue/pre-commit-hooks/branch/main/graph/badge.svg?token=IE19ANFKET)](https://codecov.io/gh/octue/pre-commit-hooks)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+
 # pre-commit-hooks
 Custom pre-commit hooks used by Octue (see [pre-commit.com](https://pre-commit.com))
 
