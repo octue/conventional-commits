@@ -15,6 +15,7 @@ rules that:
   * Is present if required
   * Has lines no longer than the maximum body line length
 
+
 ### Usage
 Use this hook in your repository by adding it to your `.pre-commit-config.yaml` file as:
 
@@ -44,21 +45,23 @@ in the following ways:
 * Footers are not validated against the specification
 * Breaking changes are validated but are allowed to appear in the body as well as the footer
 
-<details>
-  <summary>_Click here to see an example of the readability gains of only using 3-letter uppercase commit codes_</summary>
 
-  ```git
-  >>> git log --oneline -10
+### Readability gains of 3-letter uppercase commit codes/types
+Only using 3-letter uppercase commit codes/types results in a uniform, easily readable git log. There is a clear
+distinction between the code and the title of the commit, and the eye doesn't have to jump left and right on each new
+line to find the start of the title. Here is an example from our own git log:
 
-  82f5953 ENH: Validate breaking change indicators in commit messages  (HEAD -> main)
-  810944a ENH: Improve range of commit codes available
-  311f4f5 REF: Move comment removal into method  (origin/main, origin/HEAD)
-  ba2aca3 IMP: Explain commit codes in error message
-  f0142c2 DOC: Update README
-  214af4f TST: Test optional CLI args
-  417efcc IMP: Add DOC and LOG commit codes
-  d528edd OPS: Use version of hook specified in this repo locally
-  5b5727c IMP: Allow options to be passed to hook
-  86e07c5 CLN: Apply pre-commit checks to all files
-  ```
-</details>
+```git
+>>> git log --oneline -10
+
+82f5953 ENH: Validate breaking change indicators in commit messages  (HEAD -> main)
+810944a ENH: Improve range of commit codes available
+311f4f5 REF: Move comment removal into method  (origin/main, origin/HEAD)
+ba2aca3 IMP: Explain commit codes in error message
+f0142c2 DOC: Update README
+214af4f TST: Test optional CLI args
+417efcc IMP: Add DOC and LOG commit codes
+d528edd OPS: Use version of hook specified in this repo locally
+5b5727c IMP: Allow options to be passed to hook
+86e07c5 CLN: Apply pre-commit checks to all files
+```
