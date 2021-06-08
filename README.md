@@ -15,6 +15,21 @@ rules that:
   * Is present if required
   * Has lines no longer than the maximum body line length
 
+Another set of commit codes can be provided to override or augment these, but the default allowed commit codes are:
+* `FEA`: A new feature
+* `ENH`: An improvement or optimisation to an existing feature
+* `FIX`: A bug fix
+* `OPS`: An operational/devops/git change e.g. to continuous integration scripts or GitHub templates
+* `DEP`: A change in dependencies
+* `REF`: A refactor of existing code
+* `TST`: A change to tests or the testing framework
+* `MRG`: A merge commit
+* `REV`: A reversion e.g. a `git revert` commit
+* `CHO`: A chore e.g. updating a menial configuration file or .gitignore file
+* `WIP`: A work-in-progress commit (usually to be avoided, but makes sense for e.g. trying changes in git-based CI)
+* `DOC`: A change to documentation, docstrings, or documentation generation
+* `STY`: A change to code style specifications or to code to conform to new style
+
 
 ### Usage
 Use this hook in your repository by adding it to your `.pre-commit-config.yaml` file as:
