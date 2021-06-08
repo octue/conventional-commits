@@ -34,6 +34,17 @@ class ConventionalCommitMessageChecker:
       * Is present if required
       * Has lines no longer than the maximum body line length
 
+    Note that this checker is slightly divergent from the Conventional Commits specification in the following ways:
+    * Scopes are disallowed (scopes are an optional part of the specification) for readability and consistency
+    * "FEA" is used instead of "feat"
+    * Every extra commit code we have added to the default set consists of three capital letters. This means that
+      commit codes (type prefixes) always line up in `git log --oneline` view for ease of viewing and mental (human)
+      parsing. We require that they are always provided in uppercase in commit headers, again to increase ease of
+      viewing. Despite this, you can add your own codes to this default set that are in whatever form you like (e.g.
+      any number of letters in lowercase).
+    * Footers are not validated against the specification
+    * Breaking changes are validated but are allowed to appear in the body as well as the footer
+
     See https://www.conventionalcommits.org for more information.
 
     :param iter(str)|None allowed_commit_codes: allowed codes for the very beginning of the header

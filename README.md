@@ -2,8 +2,11 @@
 Custom pre-commit hooks used by Octue (see [pre-commit.com](https://pre-commit.com))
 
 ## `check-commit-message-is-conventional`
+
+### Description
 A `commit-msg`-type [`pre-commit`](https://pre-commit.com) hook that checks whether each commit message adheres to the
-[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) standard, as well as the additional rules that:
+[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) standard, as well as the additional customisable
+rules that:
 * The header:
   * Uses only the allowed commit codes
   * Is no longer than the maximum header length
@@ -12,7 +15,7 @@ A `commit-msg`-type [`pre-commit`](https://pre-commit.com) hook that checks whet
   * Is present if required
   * Has lines no longer than the maximum body line length
 
-
+### Usage
 Use this hook in your repository by adding it to your `.pre-commit-config.yaml` file as:
 
 ```yaml
@@ -27,3 +30,35 @@ Use this hook in your repository by adding it to your `.pre-commit-config.yaml` 
           - --require-body=0
           - --maximum-body-line-length=72
 ```
+
+### Divergence from Conventional Commits specification
+Note that while this hook complies with nearly all of the Conventional Commits specification, it is diverges slightly
+in the following ways:
+* Scopes are disallowed (scopes are an optional part of the specification) for readability and consistency
+* `FEA` is used instead of `feat`
+* Every extra commit code we have added to the default set consists of three capital letters. This means that
+  commit codes (type prefixes) always line up in `git log --oneline` view for ease of viewing and mental (human)
+  parsing. We require that they are always provided in uppercase in commit headers, again to increase ease of
+  viewing. Despite this, you can add your own codes to this default set that are in whatever form you like (e.g.
+  any number of letters in lowercase).
+* Footers are not validated against the specification
+* Breaking changes are validated but are allowed to appear in the body as well as the footer
+
+<details>
+  <summary>_Click here to see an example of the readability gains of only using 3-letter uppercase commit codes_</summary>
+
+  ```git
+  >>> git log --oneline -10
+
+  82f5953 ENH: Validate breaking change indicators in commit messages  (HEAD -> main)
+  810944a ENH: Improve range of commit codes available
+  311f4f5 REF: Move comment removal into method  (origin/main, origin/HEAD)
+  ba2aca3 IMP: Explain commit codes in error message
+  f0142c2 DOC: Update README
+  214af4f TST: Test optional CLI args
+  417efcc IMP: Add DOC and LOG commit codes
+  d528edd OPS: Use version of hook specified in this repo locally
+  5b5727c IMP: Allow options to be passed to hook
+  86e07c5 CLN: Apply pre-commit checks to all files
+  ```
+</details>
