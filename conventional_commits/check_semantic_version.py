@@ -21,7 +21,7 @@ def get_expected_semantic_version():
     return process.stdout.strip().decode("utf8")
 
 
-if __name__ == "__main__":
+def main():
     os.chdir(PACKAGE_ROOT)
     setup_version = get_setup_version()
     expected_semantic_version = get_expected_semantic_version()
@@ -38,3 +38,7 @@ if __name__ == "__main__":
         f"semantic version: {expected_semantic_version}."
     )
     sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
