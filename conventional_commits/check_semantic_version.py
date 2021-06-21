@@ -1,9 +1,5 @@
-import os
 import subprocess
 import sys
-
-
-PACKAGE_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 
 RED = "\033[0;31m"
@@ -22,7 +18,6 @@ def get_expected_semantic_version():
 
 
 def main():
-    os.chdir(PACKAGE_ROOT)
     setup_version = get_setup_version()
     expected_semantic_version = get_expected_semantic_version()
 
