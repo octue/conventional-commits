@@ -1,6 +1,6 @@
 import unittest
 
-from pre_commit_hooks.conventional_commits.checker import ConventionalCommitMessageChecker
+from conventional_commits.checker import ConventionalCommitMessageChecker
 
 
 class TestCheckCommitMessage(unittest.TestCase):
@@ -83,8 +83,8 @@ class TestCheckCommitMessage(unittest.TestCase):
                 "#   (use 'git push' to publish your local commits)",
                 "#",
                 "# Changes to be committed:",
-                "#       modified:   pre_commit_hooks/conventional_commits/checker.py",
-                "#       modified:   pre_commit_hooks/tests/test_checker.py",
+                "#       modified:   conventional-commits/checker.py",
+                "#       modified:   tests/test_checker.py",
                 "#",
             ]
         )

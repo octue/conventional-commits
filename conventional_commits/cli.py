@@ -2,7 +2,7 @@ import argparse
 import os
 import subprocess
 
-from pre_commit_hooks.conventional_commits.checker import ALLOWED_COMMIT_CODES, ConventionalCommitMessageChecker
+from conventional_commits.checker import ALLOWED_COMMIT_CODES, ConventionalCommitMessageChecker
 
 
 RED = "\033[0;31m"
