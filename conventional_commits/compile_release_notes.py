@@ -173,6 +173,10 @@ class ReleaseNoteCompiler:
         return release_notes_for_printing
 
 
-if __name__ == "__main__":
+def main():
     release_notes = ReleaseNoteCompiler(*sys.argv[1:]).compile_release_notes()
     print(release_notes)
+
+
+if __name__ == "__main__":
+    main()
