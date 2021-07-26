@@ -29,18 +29,6 @@ repos:
       - id: flake8
         language_version: python3
 
-#  - repo: https://github.com/thclark/pre-commit-sphinx
-#    rev: 0.0.3
-#    hooks:
-#      - id: build-docs
-#        language_version: python3
-#        additional_dependencies:
-#          - 'Sphinx>=2,<3'
-#          - 'sphinx-rtd-theme==0.5.0'
-#          - 'sphinx-tabs==1.2.1'
-#          - 'scipy~=1.5.2'
-#          - 'jsonschema~=3.2.0'
-
   - repo: https://github.com/windpioneers/pre-commit-hooks
     rev: 0.0.5
     hooks:
@@ -58,7 +46,7 @@ repos:
           - '^release/(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$'
 
   - repo: https://github.com/octue/conventional-commits
-    rev: 0.0.2
+    rev: 0.0.5
     hooks:
       - id: check-commit-message-is-conventional
         stages: [commit-msg]
