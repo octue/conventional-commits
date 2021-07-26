@@ -1,6 +1,7 @@
 import unittest
+from unittest.mock import mock_open, patch
 
-from conventional_commits.commit_message_checker import ConventionalCommitMessageChecker
+from conventional_commits.commit_message_checker import ConventionalCommitMessageChecker, main
 
 
 class TestCheckCommitMessage(unittest.TestCase):
@@ -84,7 +85,7 @@ class TestCheckCommitMessage(unittest.TestCase):
                 "#",
                 "# Changes to be committed:",
                 "#       modified:   conventional-commits/commit_message_checker.py",
-                "#       modified:   tests/test_checker.py",
+                "#       modified:   tests/test_commit_message_checker.py",
                 "#",
             ]
         )
@@ -129,3 +130,76 @@ class TestCheckCommitMessage(unittest.TestCase):
         """Test that valid breaking change indicators with the full code separator are ok."""
         ConventionalCommitMessageChecker().check_commit_message(["FIX: Fix this bug", "", "BREAKING CHANGE: blah"])
         ConventionalCommitMessageChecker().check_commit_message(["FIX: Fix this bug", "", "BREAKING-CHANGE: blah"])
+
+
+class TestMain(unittest.TestCase):
+    def test_with_invalid_commit_message(self):
+        """Test that an error is raised by the entrypoint when an invalid commit message is given."""
+        with patch("conventional_commits.cli.open", mock_open(read_data="blah\nawful commit message")):
+            return_code = main()
+
+        self.assertEqual(return_code, 1)
+
+    def test_with_valid_commit_message(self):
+        """Test that the entrypoint works with a valid commit message."""
+        with patch("conventional_commits.cli.open", mock_open(read_data="FIX: Fix a bug")):
+            return_code = main()
+
+        self.assertEqual(return_code, 0)
+
+    def test_with_different_allowed_commit_codes(self):
+        """Test that custom commit codes can be provided to replace the default set."""
+        custom_commit_codes = "ABC", "DEF", "GHI"
+
+        # Ensure the custom commit codes work.
+        for code in custom_commit_codes:
+            with patch("conventional_commits.cli.open", mock_open(read_data=f"{code}: Do a thing")):
+                return_code = main([f"--allowed-commit-codes={','.join(custom_commit_codes)}"])
+                self.assertEqual(return_code, 0)
+
+        # Ensure a default code now fails.
+        with patch("conventional_commits.cli.open", mock_open(read_data="DOC: Update docs")):
+            return_code = main([f"--allowed-commit-code={','.join(custom_commit_codes)}"])
+            self.assertEqual(return_code, 1)
+
+    def test_with_additional_allowed_commit_codes(self):
+        """Test that additional commit codes can be provided to augment the default set."""
+        additional_code = "ABC"
+
+        # Ensure the additional code works.
+        with patch("conventional_commits.cli.open", mock_open(read_data="ABC: Do a thing")):
+            return_code = main([f"--additional-commit-codes={additional_code}"])
+            self.assertEqual(return_code, 0)
+
+        # Ensure a default code still works.
+        with patch("conventional_commits.cli.open", mock_open(read_data="DOC: Update docs")):
+            return_code = main([f"--additional-commit-codes={additional_code}"])
+            self.assertEqual(return_code, 0)
+
+    def test_with_maximum_header_length_violated(self):
+        """Test an error is raised when the specified maximum header length is violated."""
+        with patch("conventional_commits.cli.open", mock_open(read_data="FIX: Fix a bug")):
+            return_code = main(["--maximum-header-length=1"])
+
+        self.assertEqual(return_code, 1)
+
+    def test_with_valid_header_ending_pattern_violated(self):
+        """Test an error is raised when the specified header-ending-pattern is violated."""
+        with patch("conventional_commits.cli.open", mock_open(read_data="FIX: Fix a bug")):
+            return_code = main(["--valid-header-ending-pattern=@"])
+
+        self.assertEqual(return_code, 1)
+
+    def test_with_require_body_violated(self):
+        """Test an error is raised when a body is not provided when it is required."""
+        with patch("conventional_commits.cli.open", mock_open(read_data="FIX: Fix a bug")):
+            return_code = main(["--require-body=1"])
+
+        self.assertEqual(return_code, 1)
+
+    def test_with_maximum_body_line_length_violated(self):
+        """Test an error is raised when the specified maximum body line length is violated."""
+        with patch("conventional_commits.cli.open", mock_open(read_data="FIX: Fix a bug\n\nhello")):
+            return_code = main(["--maximum-body-line-length=1"])
+
+        self.assertEqual(return_code, 1)
