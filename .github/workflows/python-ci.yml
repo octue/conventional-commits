@@ -20,7 +20,7 @@ jobs:
           | tar xvz \
           && sudo mv git-mkver /usr/local/bin
       - name: Install semantic version checker
-        run: pip install git+https://github.com/octue/conventional-commits
+        run: pip install git+https://github.com/octue/conventional-commits.git@"$(git branch --show-current)"
       - name: Check version
         run: check-semantic-version setup.py
 
