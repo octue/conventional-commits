@@ -37,7 +37,7 @@ class ReleaseNoteCompiler:
     anything outside of this will appear in the new release notes.
 
     :param str header:
-    :param str|None previous_notes:
+    :param str|None previous_notes_path: path to file containing the previous release notes
     :param str list_item_symbol:
     :param dict|None commit_codes_to_headings_mapping:
     :param str stop_point:
@@ -47,7 +47,7 @@ class ReleaseNoteCompiler:
     def __init__(
         self,
         stop_point,
-        previous_notes=None,
+        previous_notes_path=None,
         header="## Contents",
         list_item_symbol="- [x] ",
         commit_codes_to_headings_mapping=None,
@@ -62,8 +62,8 @@ class ReleaseNoteCompiler:
         self.list_item_symbol = list_item_symbol
         self.commit_codes_to_headings_mapping = commit_codes_to_headings_mapping or COMMIT_CODES_TO_HEADINGS_MAPPING
 
-        if previous_notes:
-            with open(previous_notes) as f:
+        if previous_notes_path:
+            with open(previous_notes_path) as f:
                 self.previous_notes = f.read()
         else:
             self.previous_notes = None
