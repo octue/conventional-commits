@@ -1,6 +1,7 @@
 import re
 import subprocess
 import sys
+import requests
 
 
 LAST_RELEASE = "LAST_RELEASE"
@@ -47,7 +48,7 @@ class ReleaseNoteCompiler:
     def __init__(
         self,
         stop_point,
-        previous_notes_path=None,
+        pull_request_url,
         header="## Contents",
         list_item_symbol="- [x] ",
         commit_codes_to_headings_mapping=None,
@@ -58,15 +59,13 @@ class ReleaseNoteCompiler:
             )
 
         self.stop_point = stop_point.upper()
+        self.previous_notes = self._get_current_pull_request_description(pull_request_url)
         self.header = header
         self.list_item_symbol = list_item_symbol
         self.commit_codes_to_headings_mapping = commit_codes_to_headings_mapping or COMMIT_CODES_TO_HEADINGS_MAPPING
 
-        if previous_notes_path:
-            with open(previous_notes_path) as f:
-                self.previous_notes = f.read()
-        else:
-            self.previous_notes = None
+    def _get_current_pull_request_description(self, pull_request_url):
+        return requests.get(pull_request_url).json()["body"]
 
     def compile_release_notes(self):
         """Compile the release or pull request notes into a multiline string, sorting the commit messages into headed
