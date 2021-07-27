@@ -15,17 +15,31 @@ VERSION_PARAMETERS = {
 
 
 def get_current_version(version_source):
+    """Get the current version of the package via the given version source.
+
+    :param str version_source: the name of the method to use to acquire the current version number (one of "setup.py", "poetry", or "npm")
+    :return str:
+    """
     version_parameters = VERSION_PARAMETERS[version_source]
     process = subprocess.run(version_parameters[0], shell=version_parameters[1], capture_output=True)
     return process.stdout.strip().decode("utf8")
 
 
 def get_expected_semantic_version():
+    """Get the expected semantic version for the package as of the current HEAD git commit.
+
+    :return str:
+    """
     process = subprocess.run(["git-mkver", "next"], capture_output=True)
     return process.stdout.strip().decode("utf8")
 
 
 def main():
+    """Compare the current version to the expected semantic version. If they match, exit successfully with an exit code
+    of 0; if they don't, exit with an exit code of 1.
+
+    :return None:
+    """
     current_version = get_current_version(version_source=sys.argv[1])
     expected_semantic_version = get_expected_semantic_version()
 

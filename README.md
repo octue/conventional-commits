@@ -4,9 +4,21 @@
 
 # conventional-commits
 
-Custom pre-commit hooks used by Octue (see [pre-commit.com](https://pre-commit.com))
+This package enables continuous deployment using [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+via three simple modules:
+- A `commit-msg`-type [`pre-commit`](https://pre-commit.com) hook that checks if the current commit message adheres to
+the Conventional Commit standard.
+- A [semantic version](https://semver.org/) checker that uses [`git-mkver`](https://github.com/idc101/git-mkver) to
+predict what the version of the package should be as of the `HEAD` commit and checks if this matches the version as
+currently stated in a `setup.py`, `setup.cfg`, `pyproject.toml`, or `package.json` file.
+- A release notes compiler that categorises all the commit messages since the last tagged release or pull request merge
+  and compiles them into a well-formatted set of release notes. These can be used to automatically update a section of
+  a pull request description on every push while leaving the rest of the description as-is.
 
-## `check-commit-message-is-conventional`
+Each one of these can be used in a Github workflow to almost completely automate your releases after pull request merge.
+Workflows that do this can be found in this repository's [`.github/workflows` directory](.github/workflows).
+
+## Pre-commit hook: `check-commit-message-is-conventional`
 
 ### Description
 
