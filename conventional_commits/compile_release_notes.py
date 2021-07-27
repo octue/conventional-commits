@@ -65,6 +65,11 @@ class ReleaseNoteCompiler:
         self.commit_codes_to_headings_mapping = commit_codes_to_headings_mapping or COMMIT_CODES_TO_HEADINGS_MAPPING
 
     def _get_current_pull_request_description(self, pull_request_url):
+        """Get the current pull request description (body) from the GitHub API.
+
+        :param str pull_request_url: the GitHub API URL for the pull request
+        :return str:
+        """
         return requests.get(pull_request_url).json()["body"]
 
     def compile_release_notes(self):
