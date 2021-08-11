@@ -141,30 +141,42 @@ class ReleaseNoteCompiler:
         unparsed_commits = []
 
         for commit in formatted_oneline_git_log.splitlines():
+            # The pipe symbol "|" is used to delimit the commit header from its decoration.
             split_commit = commit.split("|")
 
             if len(split_commit) == 2:
                 message, decoration = split_commit
 
-                if self.stop_point == LAST_RELEASE:
-                    if "tag" in decoration:
-                        if re.compile(SEMANTIC_VERSION_PATTERN).search(decoration):
-                            break
+                if self._is_stop_point(message, decoration):
+                    break
 
+                # A colon separating the commit code from the commit header is required - keep commit messages that
+                # don't conform to this but put them into an unparsed category.
                 if ":" not in message:
                     unparsed_commits.append(message.strip())
                     continue
 
+                # Allow commit headers with extra colons.
                 code, *message = message.split(":")
                 message = ":".join(message)
-
-                if self.stop_point == LAST_PULL_REQUEST:
-                    if PULL_REQUEST_INDICATOR in message:
-                        break
 
                 parsed_commits.append((code.strip(), message.strip(), decoration.strip()))
 
         return parsed_commits, unparsed_commits
+
+    def _is_stop_point(self, message, decoration):
+        """Check if this commit header is the stop point for collecting commits for the release notes.
+
+        :param str message:
+        :param str decoration:
+        :return bool:
+        """
+        if self.stop_point == LAST_RELEASE:
+            if "tag" in decoration:
+                return bool(re.compile(SEMANTIC_VERSION_PATTERN).search(decoration))
+
+        if self.stop_point == LAST_PULL_REQUEST:
+            return PULL_REQUEST_INDICATOR in message
 
     def _categorise_commit_messages(self, parsed_commits, unparsed_commits):
         """Categorise the commit messages into headed sections. Unparsed commits are put under an "uncategorised"
