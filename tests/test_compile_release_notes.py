@@ -198,10 +198,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
         mock_git_log = "\n".join(["This is not in the right format|", "FIX: Fix a bug|"])
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=mock_git_log):
-            with patch(self.GET_PR_DESCRIPTION_PATH, return_value=""):
-                release_notes = ReleaseNoteCompiler(
-                    stop_point="LAST_PULL_REQUEST", pull_request_url=self.MOCK_PULL_REQUEST_URL
-                ).compile_release_notes()
+            release_notes = ReleaseNoteCompiler(stop_point="LAST_PULL_REQUEST").compile_release_notes()
 
         expected = "\n".join(
             [
