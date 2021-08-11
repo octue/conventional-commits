@@ -7,7 +7,7 @@ import requests
 LAST_RELEASE = "LAST_RELEASE"
 LAST_PULL_REQUEST = "LAST_PULL_REQUEST"
 
-SEMANTIC_VERSION_PATTERN = r"tag: (\d+\.\d+\.\d+)"
+SEMANTIC_VERSION_PATTERN = re.compile(r"tag: (\d+\.\d+\.\d+)")
 PULL_REQUEST_INDICATOR = "Merge pull request #"
 
 COMMIT_CODES_TO_HEADINGS_MAPPING = {
@@ -173,7 +173,7 @@ class ReleaseNoteCompiler:
         """
         if self.stop_point == LAST_RELEASE:
             if "tag" in decoration:
-                return bool(re.compile(SEMANTIC_VERSION_PATTERN).search(decoration))
+                return bool(SEMANTIC_VERSION_PATTERN.search(decoration))
 
         if self.stop_point == LAST_PULL_REQUEST:
             return PULL_REQUEST_INDICATOR in message
