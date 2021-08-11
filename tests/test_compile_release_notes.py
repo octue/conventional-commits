@@ -4,12 +4,15 @@ from unittest.mock import patch
 from conventional_commits.compile_release_notes import ReleaseNoteCompiler
 
 
-MOCK_GIT_LOG = """REF: Merge commit message checker modules| (HEAD -> refactor/test-release-notes-generator, origin/refactor/test-release-notes-generator)
-MRG: Merge pull request #3 from octue/feature/add-other-conventional-commit-ci-components|
-CHO: Remove hook installation from branch| (tag: 0.0.3, origin/main, origin/HEAD, main)
-ENH: Support getting versions from poetry and npm|
-FIX: Fix semantic version script; add missing config|
-"""
+MOCK_GIT_LOG = "\n".join(
+    [
+        "REF: Merge commit message checker modules| (HEAD -> refactor/test-release-notes-generator, origin/refactor/test-release-notes-generator)",
+        "MRG: Merge pull request #3 from octue/feature/add-other-conventional-commit-ci-components|",
+        "CHO: Remove hook installation from branch| (tag: 0.0.3, origin/main, origin/HEAD, main)",
+        "ENH: Support getting versions from poetry and npm|",
+        "FIX: Fix semantic version script; add missing config|",
+    ]
+)
 
 EXPECTED_LAST_PULL_REQUEST_RELEASE_NOTES_WITH_NON_GENERATED_SECTION = "\n".join(
     [
@@ -293,29 +296,31 @@ class TestReleaseNoteCompiler(unittest.TestCase):
         made on GitHub that isn't subject to the Conventional Commits pre-commit check that we use locally) has no
         commit code.
         """
-        mock_git_log = """
-OPS: Update mkver.conf to correct pattern| (HEAD -> develop/issue-wq-521-turbine-prevailing-direction, origin/develop/issue-wq-521-turbine-prevailing-direction)
-OPS: Update conventional commit version in python-ci|
-DOC: update readme for new pre-commit ops|
-OPS: update pull request workflow updated|
-DEP: Version bump to 0.1.0|
-OPS: Delete repo issue and pr template|
-OPS: Precommit config updated to use conventional commit|
-CHO: Add _mocks file with the mocked classes|
-ENH: Windmap file inputs format now supports space separated headers|
-ENH: Add prevailing_wind_direction to twine file output schema|
-ENH: Handle edge case when wind dir not in the data and WD_<whatever> in the time series file. Add tests for checking for None prevailing wind directions|
-ENH: Mast prevailing wind direction happens when each mast time series file is imported instead of in every turbine|
-FEA: Add turbine prevailing wind direction to the result as a property of turbine|
-CHO: Clear up the comments and add logging|
-CHORE: Remove unused test|
-ENH: The prevailing wind calculation now de-seasons the count of the bins and determines the prevailing wind direction. Slow as *|
-FEAT: Added a utility module which calculates the prevailing wind direction given a wind direction time series|
-Merge pull request #103 from windpioneers/release/0.0.11| (tag: 0.0.11, origin/main, main)
-ENH: Added an assert to bring the coverage up|
-ENH: Remove a json turbine data importer, we are not going to be importing a turbine from json 'cos we use pcu for that|
-DEP: Update pcu version to 0.0.6|
-"""
+        mock_git_log = "\n".join(
+            [
+                "OPS: Update mkver.conf to correct pattern| (HEAD -> develop/issue-wq-521-turbine-prevailing-direction, origin/develop/issue-wq-521-turbine-prevailing-direction)",
+                "OPS: Update conventional commit version in python-ci|",
+                "DOC: update readme for new pre-commit ops|",
+                "OPS: update pull request workflow updated|",
+                "DEP: Version bump to 0.1.0|",
+                "OPS: Delete repo issue and pr template|",
+                "OPS: Precommit config updated to use conventional commit|",
+                "CHO: Add _mocks file with the mocked classes|",
+                "ENH: Windmap file inputs format now supports space separated headers|",
+                "ENH: Add prevailing_wind_direction to twine file output schema|",
+                "ENH: Handle edge case when wind dir not in the data and WD_<whatever> in the time series file. Add tests for checking for None prevailing wind directions|",
+                "ENH: Mast prevailing wind direction happens when each mast time series file is imported instead of in every turbine|",
+                "FEA: Add turbine prevailing wind direction to the result as a property of turbine|",
+                "CHO: Clear up the comments and add logging|",
+                "CHORE: Remove unused test|",
+                "ENH: The prevailing wind calculation now de-seasons the count of the bins and determines the prevailing wind direction. Slow as *|",
+                "FEAT: Added a utility module which calculates the prevailing wind direction given a wind direction time series|",
+                "Merge pull request #103 from windpioneers/release/0.0.11| (tag: 0.0.11, origin/main, main)",
+                "ENH: Added an assert to bring the coverage up|",
+                "ENH: Remove a json turbine data importer, we are not going to be importing a turbine from json 'cos we use pcu for that|",
+                "DEP: Update pcu version to 0.0.6|",
+            ]
+        )
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=mock_git_log):
             release_notes = ReleaseNoteCompiler(stop_point="LAST_RELEASE").compile_release_notes()
