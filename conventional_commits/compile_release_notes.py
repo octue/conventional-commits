@@ -152,7 +152,7 @@ class ReleaseNoteCompiler:
                             break
 
                 try:
-                    code, message = message.split(":")
+                    code, *message = message.split(":")
                 except ValueError:
                     unparsed_commits.append(message.strip())
                     continue
@@ -161,7 +161,7 @@ class ReleaseNoteCompiler:
                     if PULL_REQUEST_INDICATOR in message:
                         break
 
-                parsed_commits.append((code.strip(), message.strip(), decoration.strip()))
+                parsed_commits.append((code.strip(), ":".join(message).strip(), decoration.strip()))
 
         return parsed_commits, unparsed_commits
 
