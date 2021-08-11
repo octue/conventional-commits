@@ -7,7 +7,8 @@ import requests
 LAST_RELEASE = "LAST_RELEASE"
 LAST_PULL_REQUEST = "LAST_PULL_REQUEST"
 
-SEMANTIC_VERSION_PATTERN = r"tag: (\d+\.\d+\.\d+)"
+COMMIT_REF_MERGE_PATTERN = re.compile(r"Merge [0-9a-f]+ into [0-9a-f]+")
+SEMANTIC_VERSION_PATTERN = re.compile(r"tag: (\d+\.\d+\.\d+)")
 PULL_REQUEST_INDICATOR = "Merge pull request #"
 
 COMMIT_CODES_TO_HEADINGS_MAPPING = {
@@ -151,9 +152,12 @@ class ReleaseNoteCompiler:
                     break
 
                 # A colon separating the commit code from the commit header is required - keep commit messages that
-                # don't conform to this but put them into an unparsed category.
+                # don't conform to this but put them into an unparsed category. Ignore commits that are merges of one
+                # commit ref into another (GitHub Actions produces these - they don't appear in the actual history of
+                # the branch so can be safely ignored when making release notes).
                 if ":" not in message:
-                    unparsed_commits.append(message.strip())
+                    if not COMMIT_REF_MERGE_PATTERN.search(message):
+                        unparsed_commits.append(message.strip())
                     continue
 
                 # Allow commit headers with extra colons.
@@ -173,7 +177,7 @@ class ReleaseNoteCompiler:
         """
         if self.stop_point == LAST_RELEASE:
             if "tag" in decoration:
-                return bool(re.compile(SEMANTIC_VERSION_PATTERN).search(decoration))
+                return bool(SEMANTIC_VERSION_PATTERN.search(decoration))
 
         if self.stop_point == LAST_PULL_REQUEST:
             return PULL_REQUEST_INDICATOR in message
