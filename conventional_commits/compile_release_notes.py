@@ -151,16 +151,16 @@ class ReleaseNoteCompiler:
                         if re.compile(SEMANTIC_VERSION_PATTERN).search(decoration):
                             break
 
+                if self.stop_point == LAST_PULL_REQUEST:
+                    if PULL_REQUEST_INDICATOR in message:
+                        break
+
                 if ":" not in message:
                     unparsed_commits.append(message.strip())
                     continue
 
                 code, *message = message.split(":")
                 message = ":".join(message)
-
-                if self.stop_point == LAST_PULL_REQUEST:
-                    if PULL_REQUEST_INDICATOR in message:
-                        break
 
                 parsed_commits.append((code.strip(), message.strip(), decoration.strip()))
 
