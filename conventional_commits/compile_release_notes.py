@@ -6,6 +6,7 @@ import requests
 
 LAST_RELEASE = "LAST_RELEASE"
 LAST_PULL_REQUEST = "LAST_PULL_REQUEST"
+LAST_BRANCH_POINT = "LAST_BRANCH_POINT"
 
 COMMIT_REF_MERGE_PATTERN = re.compile(r"Merge [0-9a-f]+ into [0-9a-f]+")
 SEMANTIC_VERSION_PATTERN = re.compile(r"tag: (\d+\.\d+\.\d+)")
@@ -57,9 +58,10 @@ class ReleaseNoteCompiler:
         list_item_symbol="- [x] ",
         commit_codes_to_headings_mapping=None,
     ):
-        if stop_point.upper() not in {LAST_RELEASE, LAST_PULL_REQUEST}:
+        if stop_point.upper() not in {LAST_RELEASE, LAST_PULL_REQUEST, LAST_BRANCH_POINT}:
             raise ValueError(
-                f"`stop_point` must be one of {LAST_RELEASE, LAST_PULL_REQUEST!r}; received {stop_point!r}."
+                f"`stop_point` must be one of {LAST_RELEASE, LAST_PULL_REQUEST, LAST_BRANCH_POINT!r}; received "
+                f"{stop_point!r}."
             )
 
         self.stop_point = stop_point.upper()
@@ -72,6 +74,12 @@ class ReleaseNoteCompiler:
         self.header = header
         self.list_item_symbol = list_item_symbol
         self.commit_codes_to_headings_mapping = commit_codes_to_headings_mapping or COMMIT_CODES_TO_HEADINGS_MAPPING
+
+        if self.stop_point == LAST_BRANCH_POINT:
+            self._branch_point = self._get_last_branch_point()
+
+            if self._branch_point is None:
+                self.stop_point = LAST_RELEASE
 
     def compile_release_notes(self):
         """Compile the commit messages since the given stop point into a new set of release notes, sorting them into
@@ -124,12 +132,33 @@ class ReleaseNoteCompiler:
 
         return requests.get(pull_request_url, headers=headers).json()["body"]
 
-    def _get_git_log(self):
-        """Get the one-line decorated git log formatted with "|" separating the message and decoration.
+    def _get_last_branch_point(self):
+        """Get the abbreviated commit hash of the most recent branch point (i.e. where the current branch branched off
+        another branch).
+
+        :return str|None:
+        """
+        graph = self._get_git_branch_graph()
+
+        for line in graph.split("\n"):
+            if line.startswith("*"):
+                return line.split()[1]
+
+        return None
+
+    def _get_git_branch_graph(self):
+        """Get the one-line git log branch graph.
 
         :return str:
         """
-        return subprocess.run(["git", "log", "--pretty=format:%s|%d"], capture_output=True).stdout.strip().decode()
+        return subprocess.run(["git", "log", "--graph", "--oneline"], capture_output=True).stdout.decode()
+
+    def _get_git_log(self):
+        """Get the one-line decorated git log formatted with "|" delimiting the commit hash, message, and decoration.
+
+        :return str:
+        """
+        return subprocess.run(["git", "log", "--pretty=format:%h|%s|%d"], capture_output=True).stdout.strip().decode()
 
     def _parse_commit_messages(self, formatted_oneline_git_log):
         """Parse commit messages from the git log (formatted using `--pretty=format:%s|%d`) until the stop point is
@@ -145,10 +174,10 @@ class ReleaseNoteCompiler:
             # The pipe symbol "|" is used to delimit the commit header from its decoration.
             split_commit = commit.split("|")
 
-            if len(split_commit) == 2:
-                message, decoration = split_commit
+            if len(split_commit) == 3:
+                commit_hash, message, decoration = split_commit
 
-                if self._is_stop_point(message, decoration):
+                if self._is_stop_point(commit_hash, message, decoration):
                     break
 
                 # A colon separating the commit code from the commit header is required - keep commit messages that
@@ -168,13 +197,18 @@ class ReleaseNoteCompiler:
 
         return parsed_commits, unparsed_commits
 
-    def _is_stop_point(self, message, decoration):
+    def _is_stop_point(self, commit_hash, message, decoration):
         """Check if this commit header is the stop point for collecting commits for the release notes.
 
+        :param str commit_hash:
         :param str message:
         :param str decoration:
         :return bool:
         """
+        if self.stop_point == LAST_BRANCH_POINT:
+            if commit_hash == self._branch_point:
+                return True
+
         if self.stop_point == LAST_RELEASE:
             if "tag" in decoration:
                 return bool(SEMANTIC_VERSION_PATTERN.search(decoration))
