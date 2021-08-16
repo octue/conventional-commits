@@ -132,6 +132,19 @@ class TestReleaseNoteCompiler(unittest.TestCase):
         with patch(self.GET_GIT_BRANCH_GRAPH_METHOD_PATH, return_value=mock_git_log_graph):
             self.assertEqual(ReleaseNoteCompiler(stop_point="LAST_BRANCH_POINT")._get_last_branch_point(), "6589a8e")
 
+    def test_branch_point_is_none_if_no_branch_point_is_found(self):
+        """Test that the branch point is `None` if no branch point is found."""
+        mock_git_log_graph = "\n".join(
+            [
+                "* 27dcef0 (fix/fix-other-release-notes-stop-point-bug) TST: Improve presentation of long strings",
+                "* 358ffd5 REF: Move stop point checking into separate method",
+                "* 44927c6 CHO: Initial commit",
+            ]
+        )
+
+        with patch(self.GET_GIT_BRANCH_GRAPH_METHOD_PATH, return_value=mock_git_log_graph):
+            self.assertIsNone(ReleaseNoteCompiler(stop_point="LAST_BRANCH_POINT")._get_last_branch_point())
+
     def test_branch_point_stop_point(self):
         """Test generating release notes that stop at the last branch point."""
         mock_git_log = "\n".join(
@@ -170,6 +183,15 @@ class TestReleaseNoteCompiler(unittest.TestCase):
         )
 
         self.assertEqual(release_notes, expected)
+
+    def test_compiler_reverts_to_last_release_stop_point_if_branch_point_is_not_found(self):
+        """Ensure the release note compiler reverts to the LAST_RELEASE stop point if the branch point is not found when
+        the given stop point is LAST_BRANCH_POINT.
+        """
+        with patch(self.GET_BRANCH_POINT_METHOD_PATH, return_value=None):
+            release_note_compiler = ReleaseNoteCompiler(stop_point="LAST_BRANCH_POINT")
+
+        self.assertEqual(release_note_compiler.stop_point, "LAST_RELEASE")
 
     def test_with_previous_release_notes_missing_autogeneration_markers(self):
         """Test that previous release notes are not overwritten when the autogeneration markers are missing."""

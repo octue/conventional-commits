@@ -134,17 +134,19 @@ class ReleaseNoteCompiler:
 
     def _get_last_branch_point(self):
         """Get the abbreviated commit hash of the most recent branch point (i.e. where the current branch branched off
-        another branch).
+        another branch). If there is no branch point (e.g. there is only one branch), `None` is returned.
 
         :return str|None:
         """
         graph = self._get_git_branch_graph()
+        graph_lines = graph.split("\n")
 
-        for line in graph.split("\n"):
+        if all(line.startswith("*") for line in graph_lines):
+            return None
+
+        for line in graph_lines:
             if line.startswith("*"):
                 return line.split()[1]
-
-        return None
 
     def _get_git_branch_graph(self):
         """Get the one-line git log branch graph.
