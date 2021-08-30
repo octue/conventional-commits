@@ -141,12 +141,23 @@ class ReleaseNoteCompiler:
         graph = self._get_git_branch_graph()
         graph_lines = graph.split("\n")
 
+        # There is no branch point if the git history is entirely linear.
         if all(line.startswith("*") for line in graph_lines):
             return None
 
+        # Look for the first branch point - this is the oldest commit in the first set of unbroken asterisk-preceded
+        # lines in the graph.
+        branch_point = None
+
         for line in graph_lines:
+            # Find the oldest commit in the first set of unbroken asterisk-preceded lines in the graph.
             if line.startswith("*"):
-                return line.split()[1]
+                branch_point = line.split()[1]
+            else:
+                if branch_point is not None:
+                    return branch_point
+
+        return None
 
     def _get_git_branch_graph(self):
         """Get the one-line git log branch graph.
