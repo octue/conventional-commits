@@ -109,9 +109,9 @@ class TestReleaseNoteCompiler(unittest.TestCase):
 
         self.assertEqual(release_notes, expected)
 
-    def test_get_last_branch_point_with_left_most_branch(self):
+    def test_get_last_branch_point_with_fully_ahead_branch(self):
         """Test that the `ReleaseNoteCompiler._get_last_branch_point` method selects the correct commit hash from the
-        git log branch graph when the current branch is displayed as the left-most branch.
+        git log branch graph when the current branch is fully-ahead (i.e. ahead of all other branches).
         """
         mock_git_log_graph = "\n".join(
             [
@@ -134,9 +134,9 @@ class TestReleaseNoteCompiler(unittest.TestCase):
         with patch(self.GET_GIT_BRANCH_GRAPH_METHOD_PATH, return_value=mock_git_log_graph):
             self.assertEqual(ReleaseNoteCompiler(stop_point="LAST_BRANCH_POINT")._get_last_branch_point(), "85f6612")
 
-    def test_get_last_branch_point_with_non_left_most_branch(self):
+    def test_get_last_branch_point_with_non_fully_ahead_branch(self):
         """Test that the `ReleaseNoteCompiler._get_last_branch_point` method selects the correct commit hash from the
-        git log branch graph when the current branch is displayed as the non-left-most branch.
+        git log branch graph when the current branch is not fully-ahead (i.e. not ahead of all other branches).
         """
         mock_git_log_graph = "\n".join(
             [
