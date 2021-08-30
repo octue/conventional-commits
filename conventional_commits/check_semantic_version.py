@@ -8,19 +8,25 @@ NO_COLOUR = "\033[0m"
 
 
 VERSION_PARAMETERS = {
-    "setup.py": (["python", "setup.py", "--version"], False),
-    "poetry": (["poetry", "version", "-s"], False),
-    "npm": ("""npm version --json | jq --raw-output '.["planex-site"]'""", True),
+    "setup.py": [["python", "setup.py", "--version"], False],
+    "poetry": [["poetry", "version", "-s"], False],
+    "npm": ["""npm version --json | jq --raw-output '.["{}"]'""", True],
 }
 
 
-def get_current_version(version_source):
-    """Get the current version of the package via the given version source.
+def get_current_version(version_source, package_name=None):
+    """Get the current version of the package via the given version source. If getting the version via `npm` from a
+    `package.json` file, the name of the package is required.
 
     :param str version_source: the name of the method to use to acquire the current version number (one of "setup.py", "poetry", or "npm")
+    :param str|None package_name: the name of the package if it is needed for getting the version (e.g. for npm)
     :return str:
     """
     version_parameters = VERSION_PARAMETERS[version_source]
+
+    if package_name:
+        version_parameters[0] = version_parameters[0].format(package_name)
+
     process = subprocess.run(version_parameters[0], shell=version_parameters[1], capture_output=True)
     return process.stdout.strip().decode("utf8")
 
@@ -40,7 +46,12 @@ def main():
 
     :return None:
     """
-    current_version = get_current_version(version_source=sys.argv[1])
+    if len(sys.argv) >= 3:
+        package_name = sys.argv[2]
+    else:
+        package_name = None
+
+    current_version = get_current_version(version_source=sys.argv[1], package_name=package_name)
     expected_semantic_version = get_expected_semantic_version()
 
     if current_version != expected_semantic_version:
