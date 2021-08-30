@@ -145,8 +145,8 @@ class ConventionalCommitMessageChecker:
 
         if len(header) > self.maximum_header_length:
             raise ValueError(
-                f"The commit header should be no longer than {self.maximum_header_length} characters; it is currently "
-                f"{len(header)} characters."
+                f"The commit header should be no longer than {self.maximum_header_length} characters; received "
+                f"{header!r}, which is {len(header)} characters long."
             )
 
         if not re.compile(self.valid_header_ending_pattern).match(header[-1]):
