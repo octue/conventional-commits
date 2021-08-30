@@ -133,9 +133,14 @@ class ConventionalCommitMessageChecker:
             raise ValueError("The commit header should not be blank.")
 
         if not any(header.startswith(code + CODE_SEPARATOR) for code in self.allowed_commit_codes.keys()):
+            pretty_formatted_allowed_commit_codes = "\n".join(
+                f" - {key!r}: {value}" for key, value in self.allowed_commit_codes.items()
+            )
+
             raise ValueError(
-                f"Commit headers should start with one of the allowed commit codes ({self.allowed_commit_codes!r}) and "
-                f"be separated from the header message by {CODE_SEPARATOR!r}; received {header!r}."
+                f"Commit headers should start with one of the allowed commit codes:"
+                f"\n{pretty_formatted_allowed_commit_codes}\nand be separated from the header message by "
+                f"{CODE_SEPARATOR!r}. Received {header!r}."
             )
 
         if len(header) > self.maximum_header_length:
