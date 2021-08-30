@@ -54,6 +54,10 @@ def main():
     current_version = get_current_version(version_source=sys.argv[1], package_name=package_name)
     expected_semantic_version = get_expected_semantic_version()
 
+    if current_version == "null":
+        print(f"{RED}VERSION FAILED CHECKS:{NO_COLOUR} No current version found.")
+        sys.exit(1)
+
     if current_version != expected_semantic_version:
         print(
             f"{RED}VERSION FAILED CHECKS:{NO_COLOUR} The current version ({current_version}) is different from the "
