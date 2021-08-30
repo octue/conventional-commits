@@ -72,7 +72,7 @@ def main(argv=None):
 
     expected_semantic_version = get_expected_semantic_version()
 
-    if current_version == "null":
+    if not current_version or current_version == "null":
         print(f"{RED}VERSION FAILED CHECKS:{NO_COLOUR} No current version found.")
         sys.exit(1)
 
