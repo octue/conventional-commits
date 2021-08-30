@@ -99,8 +99,8 @@ class ConventionalCommitMessageChecker:
         except IndexError:
             if self.require_body:
                 raise ValueError(
-                    f"A body (separated from the header by a blank line) is required in the commit message; "
-                    f"received {commit_message_lines!r}."
+                    f"A body (separated from the header by a blank line) is required in the commit message; received "
+                    f"{commit_message_lines[0]!r}."
                 )
             return
 
