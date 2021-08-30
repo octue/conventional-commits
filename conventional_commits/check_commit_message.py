@@ -99,8 +99,8 @@ class ConventionalCommitMessageChecker:
         except IndexError:
             if self.require_body:
                 raise ValueError(
-                    f"A body (separated from the header by a blank line) is required in the commit message; "
-                    f"received {commit_message_lines!r}."
+                    f"A body (separated from the header by a blank line) is required in the commit message; received "
+                    f"{commit_message_lines[0]!r}."
                 )
             return
 
@@ -133,15 +133,20 @@ class ConventionalCommitMessageChecker:
             raise ValueError("The commit header should not be blank.")
 
         if not any(header.startswith(code + CODE_SEPARATOR) for code in self.allowed_commit_codes.keys()):
+            pretty_formatted_allowed_commit_codes = "\n".join(
+                f" - {key!r}: {value}" for key, value in self.allowed_commit_codes.items()
+            )
+
             raise ValueError(
-                f"Commit headers should start with one of the allowed commit codes ({self.allowed_commit_codes!r}) and "
-                f"be separated from the header message by {CODE_SEPARATOR!r}; received {header!r}."
+                f"Commit headers should start with one of the allowed commit codes:"
+                f"\n{pretty_formatted_allowed_commit_codes}\nand be separated from the header message by "
+                f"{CODE_SEPARATOR!r}. Received {header!r}."
             )
 
         if len(header) > self.maximum_header_length:
             raise ValueError(
-                f"The commit header should be no longer than {self.maximum_header_length} characters; it is currently "
-                f"{len(header)} characters."
+                f"The commit header should be no longer than {self.maximum_header_length} characters; received "
+                f"{header!r}, which is {len(header)} characters long."
             )
 
         if not re.compile(self.valid_header_ending_pattern).match(header[-1]):
