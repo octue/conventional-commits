@@ -1,4 +1,5 @@
 import argparse
+import copy
 import os
 import subprocess
 import sys
@@ -25,7 +26,7 @@ def get_current_version(version_source, version_source_file=None):
     :return str:
     """
     try:
-        version_parameters = VERSION_PARAMETERS[version_source]
+        version_parameters = copy.deepcopy(VERSION_PARAMETERS[version_source])
     except KeyError:
         raise ValueError(
             f"Unsupported version source received: {version_source!r}; options are {list(VERSION_PARAMETERS.keys())!r}."
