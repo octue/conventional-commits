@@ -1,7 +1,11 @@
+import os
 import unittest
 from unittest.mock import patch
 
 from conventional_commits import check_semantic_version
+
+
+TEST_DATA_DIRECTORY = os.path.abspath(os.path.join(os.path.dirname(__file__), "test_package"))
 
 
 class MockCompletedProcess:
@@ -92,13 +96,16 @@ class TestCheckSemanticVersion(unittest.TestCase):
 
     def test_with_custom_file_path_for_setup_py(self):
         """Test that the current version can be extracted from a different file than the top-level setup.py file."""
-        version = check_semantic_version.get_current_version("setup.py", version_source_file="test_package/setup.py")
+        version = check_semantic_version.get_current_version(
+            "setup.py", version_source_file=os.path.join(TEST_DATA_DIRECTORY, "setup.py")
+        )
+
         self.assertEqual(version, "0.3.4")
 
     def test_with_custom_file_path_for_pyproject_toml(self):
         """Test that the current version can be extracted from a different file than the top-level file pyproject.toml."""
         version = check_semantic_version.get_current_version(
-            "pyproject.toml", version_source_file="test_package/pyproject.toml"
+            "pyproject.toml", version_source_file=os.path.join(TEST_DATA_DIRECTORY, "pyproject.toml")
         )
 
         self.assertEqual(version, "0.6.3")
@@ -106,7 +113,7 @@ class TestCheckSemanticVersion(unittest.TestCase):
     def test_with_custom_file_path_for_package_json(self):
         """Test that the current version can be extracted from a different file than the top-level package.json file."""
         version = check_semantic_version.get_current_version(
-            "package.json", version_source_file="test_package/package.test.json"
+            "package.json", version_source_file=os.path.join(TEST_DATA_DIRECTORY, "package.test.json")
         )
 
         self.assertEqual(version, "1.5.3")
