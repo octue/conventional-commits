@@ -1,5 +1,4 @@
 import argparse
-import os
 import subprocess
 import sys
 
@@ -12,35 +11,24 @@ NO_COLOUR = "\033[0m"
 VERSION_PARAMETERS = {
     "setup.py": [["python", "setup.py", "--version"], False],
     "poetry": [["poetry", "version", "-s"], False],
-    "npm": ["""npm version --json | jq --raw-output '.["{}"]'""", True],
+    "package.json": ["""cat {} | jq --raw-output '.["version"]'""", True],
 }
 
 
-def get_current_version(version_source, package_name=None, version_source_file=None):
-    """Get the current version of the package via the given version source. If getting the version via `npm` from a
-    `package.json` file, the name of the package is required.
+def get_current_version(version_source, version_source_file=None):
+    """Get the current version of the package via the given version source. The relevant file containing the version
+    information is assumed to be in the current working directory unless `version_source_file` is given.
 
-    :param str version_source: the name of the method to use to acquire the current version number (one of "setup.py", "poetry", or "npm")
-    :param str|None package_name: the name of the package if it is needed for getting the version (e.g. for npm)
+    :param str version_source: the name of the method to use to acquire the current version number (one of "setup.py", "poetry", or "package.json")
     :param str|None version_source_file: the path to the version source file if it is not in the current working directory
     :return str:
     """
-    original_directory = os.path.abspath(os.getcwd())
     version_parameters = VERSION_PARAMETERS[version_source]
 
-    if package_name:
-        version_parameters[0] = version_parameters[0].format(package_name)
-
     if version_source_file:
-        file_directory = os.path.abspath(os.path.dirname(version_source_file))
-        os.chdir(file_directory)
+        version_parameters[0] = version_parameters[0].format(version_source_file)
 
-    try:
-        process = subprocess.run(version_parameters[0], shell=version_parameters[1], capture_output=True)
-    finally:
-        if version_source_file:
-            os.chdir(original_directory)
-
+    process = subprocess.run(version_parameters[0], shell=version_parameters[1], capture_output=True)
     return process.stdout.strip().decode("utf8")
 
 
@@ -61,15 +49,11 @@ def main(argv=None):
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("version_source")
-    parser.add_argument("--package-name", default=None)
     parser.add_argument("--file", default=None)
 
     args = parser.parse_args(argv)
 
-    current_version = get_current_version(
-        version_source=args.version_source, package_name=args.package_name, version_source_file=args.file
-    )
-
+    current_version = get_current_version(version_source=args.version_source, version_source_file=args.file)
     expected_semantic_version = get_expected_semantic_version()
 
     if not current_version or current_version == "null":

@@ -84,3 +84,11 @@ class TestCheckSemanticVersion(unittest.TestCase):
                         "The current version (0.5.3) is different from the expected semantic version (0.3.9).",
                         message,
                     )
+
+    def test_with_custom_file_path_for_package_json(self):
+        """Test that the current version can be extracted from a different file than the top-level package.json file."""
+        version = check_semantic_version.get_current_version(
+            "package.json", version_source_file="test_package/package.test.json"
+        )
+
+        self.assertEqual(version, "1.5.3")
