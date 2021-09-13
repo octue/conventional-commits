@@ -11,7 +11,7 @@ NO_COLOUR = "\033[0m"
 
 VERSION_PARAMETERS = {
     "setup.py": [["python", "setup.py", "--version"], False],
-    "poetry": [["poetry", "version", "-s"], False],
+    "pyproject.toml": [["poetry", "version", "-s"], False],
     "package.json": ["""cat {} | jq --raw-output '.["version"]'""", True],
 }
 
@@ -20,7 +20,7 @@ def get_current_version(version_source, version_source_file=None):
     """Get the current version of the package via the given version source. The relevant file containing the version
     information is assumed to be in the current working directory unless `version_source_file` is given.
 
-    :param str version_source: the name of the method to use to acquire the current version number (one of "setup.py", "poetry", or "package.json")
+    :param str version_source: the name of the method to use to acquire the current version number (one of "setup.py", "pyproject.toml", or "package.json")
     :param str|None version_source_file: the path to the version source file if it is not in the current working directory
     :return str:
     """
@@ -33,7 +33,7 @@ def get_current_version(version_source, version_source_file=None):
 
     original_working_directory = os.getcwd()
 
-    if version_source in {"setup.py", "poetry"}:
+    if version_source in {"setup.py", "pyproject.toml"}:
         if version_source_file:
             os.chdir(os.path.dirname(version_source_file))
 

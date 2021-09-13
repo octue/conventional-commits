@@ -98,7 +98,7 @@ class TestCheckSemanticVersion(unittest.TestCase):
     def test_with_custom_file_path_for_pyproject_toml(self):
         """Test that the current version can be extracted from a different file than the top-level file pyproject.toml."""
         version = check_semantic_version.get_current_version(
-            "poetry", version_source_file="test_package/pyproject.toml"
+            "pyproject.toml", version_source_file="test_package/pyproject.toml"
         )
 
         self.assertEqual(version, "0.6.3")
