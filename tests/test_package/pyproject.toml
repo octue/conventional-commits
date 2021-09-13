@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "blah-de-blah"
+version = "0.6.3"
+description = ""
+authors = []
+
+
+[tool.poetry.dependencies]
+
+python = "^3.8"
+
+argon2-cffi = "^20.1.0"
+BitVector = "^3.4.9"
+boto3 = "^1.17.51"
+channels = "^3.0.3"
+channels_redis = "^3.2.0"
+collectfast = "^2.2.0"  # For quick static files collection https://github.com/antonagestam/collectfast/
+coolname = "^1.1.0"

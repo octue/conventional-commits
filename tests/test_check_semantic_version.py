@@ -16,6 +16,11 @@ class MockCompletedProcess:
 
 
 class TestCheckSemanticVersion(unittest.TestCase):
+    def test_error_raised_if_unsupported_version_source_provided(self):
+        """Ensure an error is raised if an unsupported version source is provided."""
+        with self.assertRaises(ValueError):
+            check_semantic_version.get_current_version(version_source="blah")
+
     def test_get_current_version(self):
         """Test that the current version can be parsed from a successful subprocess command."""
         with patch("subprocess.run", return_value=MockCompletedProcess(stdout=b"0.3.9")):
@@ -84,6 +89,19 @@ class TestCheckSemanticVersion(unittest.TestCase):
                         "The current version (0.5.3) is different from the expected semantic version (0.3.9).",
                         message,
                     )
+
+    def test_with_custom_file_path_for_setup_py(self):
+        """Test that the current version can be extracted from a different file than the top-level setup.py file."""
+        version = check_semantic_version.get_current_version("setup.py", version_source_file="test_package/setup.py")
+        self.assertEqual(version, "0.3.4")
+
+    def test_with_custom_file_path_for_pyproject_toml(self):
+        """Test that the current version can be extracted from a different file than the top-level file pyproject.toml."""
+        version = check_semantic_version.get_current_version(
+            "poetry", version_source_file="test_package/pyproject.toml"
+        )
+
+        self.assertEqual(version, "0.6.3")
 
     def test_with_custom_file_path_for_package_json(self):
         """Test that the current version can be extracted from a different file than the top-level package.json file."""
