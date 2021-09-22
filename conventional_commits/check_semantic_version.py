@@ -67,6 +67,12 @@ def main(argv=None):
 
     :return None:
     """
+    if not os.path.exists("mkver.conf"):
+        raise FileNotFoundError(
+            "A mkver.conf file is required in the current working directory (usually the repository root) in order to "
+            "check the semantic version."
+        )
+
     parser = argparse.ArgumentParser()
     parser.add_argument("version_source")
     parser.add_argument("--file", default=None)
