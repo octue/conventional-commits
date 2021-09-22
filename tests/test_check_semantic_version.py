@@ -80,6 +80,19 @@ class TestCheckSemanticVersion(unittest.TestCase):
             version = check_semantic_version.get_expected_semantic_version()
             self.assertEqual(version, "0.3.9")
 
+    def test_main_raises_error_if_no_mkver_conf_file_in_current_working_directory(self):
+        """Test that an error is raised if there is no mkver.conf file in the current working directory."""
+        original_working_directory = os.getcwd()
+
+        try:
+            os.chdir(TEST_DATA_DIRECTORY)
+
+            with self.assertRaises(FileNotFoundError):
+                check_semantic_version.main(["setup.py"])
+
+        finally:
+            os.chdir(original_working_directory)
+
     def test_main_with_matching_versions(self):
         """Test that the correct message and error message are returned if the current version and the expected version
         are the same.
