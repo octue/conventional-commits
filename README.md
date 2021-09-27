@@ -18,6 +18,11 @@ currently stated in a `setup.py`, `setup.cfg`, `pyproject.toml`, or `package.jso
 Each one of these can be used in a Github workflow to almost completely automate your releases after pull request merge.
 Workflows that do this can be found in this repository's [`.github/workflows` directory](.github/workflows).
 
+## Contents
+* [Commit message pre-commit hook](#pre-commit-hook)
+* [Semantic version checker](#semantic-version-checker)
+* [Release note compiler](#release-note-compiler)
+
 ## Pre-commit hook: `check-commit-message-is-conventional`
 
 ### Description
@@ -120,3 +125,65 @@ d528edd OPS: Use version of hook specified in this repo locally
 5b5727c IMP: Allow options to be passed to hook
 86e07c5 CLN: Apply pre-commit checks to all files
 ```
+
+
+## Semantic version checker
+
+### Description
+
+#### What does it do?
+A command-line tool that compares the semantic version specified in the given type of "version source" file against the
+semantic version expected due to the commits since the last tagged version in the git history. This is determined
+according to the mandatory `git-mkver` configuration file in the working directory. If the version source file and the
+expected version agree, the checker exits with a zero return code and displays a success message. If they don't agree,
+it exits with a non-zero return code and displays an error message.
+
+#### Example
+For [this standard configuration file](examples/semantic_version_checker/mkver.conf), if the last tagged version in your
+repository is `0.7.3` and since then:
+* There has been a breaking change and any number of features or bug-fixes/small-changes, the expected version will
+  be `1.0.0`
+* There has been a new feature, any number of bug-fixes/small-changes, but no breaking changes, the expected
+  version will be `0.8.0`
+* There has been a bug-fix/small-change but no breaking changes or new features, the expected version will be `0.7.4`
+
+#### Version source files
+A version source file is one of the following, which must contain the package version:
+* `setup.py` (this covers versions defined in a `setup.py` or `setup.cfg` file)
+* `pyproject.toml`
+* `package.json`
+
+If the version source file is not in the root directory, an optional argument can be passed to the checker to tell it to
+look at a file of the version source file type at a different location.
+
+#### Extra requirements
+Note that this command requires:
+* `git-mkver` to be installed and available in the shell as `git-mkver`
+* A `mkver.conf` file to be present in the working directory (usually the repository root) -
+  [see sample here](examples/semantic_version_checker/mkver.conf).
+
+
+### Usage
+```shell
+usage: check-semantic-version [-h] [--file FILE] version_source_type
+
+positional arguments:
+  version_source_type  The type of file to look for version in. It must be one of ['setup.py', 'pyproject.toml', 'package.json'] and is assumed to be in the repository
+                       root unless the --file option is also given
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --file FILE          The path to version source file if it isn't in the repository root e.g. path/to/setup.py
+
+```
+
+### GitHub workflows
+The checker can easily be incorporated into a GitHub workflow as a job. See
+[here](examples/semantic_version_checker/workflow.yml) for a canonical example.
+
+
+## Release note compiler
+
+### Description
+
+### Usage
