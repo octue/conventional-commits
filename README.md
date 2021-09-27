@@ -19,11 +19,11 @@ Each one of these can be used in a Github workflow to almost completely automate
 Workflows that do this can be found in this repository's [`.github/workflows` directory](.github/workflows).
 
 ## Contents
-* [Commit message pre-commit hook](#pre-commit-hook)
+* [Commit message pre-commit hook](#conventional-commit-message-pre-commit-hook-check)
 * [Semantic version checker](#semantic-version-checker)
 * [Release note compiler](#release-note-compiler)
 
-## Pre-commit hook: `check-commit-message-is-conventional`
+## Conventional commit message pre-commit hook
 
 ### Description
 
