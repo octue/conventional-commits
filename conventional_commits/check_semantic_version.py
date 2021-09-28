@@ -76,13 +76,14 @@ def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "version_source_type",
-        help=f"The type of file to look for version in. It must be one of {list(VERSION_PARAMETERS.keys())} and is "
+        choices=list(VERSION_PARAMETERS.keys()),
+        help=f"The type of file to look for the version in. It must be one of {list(VERSION_PARAMETERS.keys())} and is "
         f"assumed to be in the repository root unless the --file option is also given",
     )
     parser.add_argument(
         "--file",
         default=None,
-        help="The path to version source file if it isn't in the repository root e.g. path/to/setup.py",
+        help="The path to the version source file if it isn't in the repository root e.g. path/to/setup.py",
     )
 
     args = parser.parse_args(argv)

@@ -1,12 +1,13 @@
+import argparse
 import re
 import subprocess
-import sys
 import requests
 
 
 LAST_RELEASE = "LAST_RELEASE"
 LAST_PULL_REQUEST = "LAST_PULL_REQUEST"
 LAST_BRANCH_POINT = "LAST_BRANCH_POINT"
+STOP_POINTS = (LAST_RELEASE, LAST_PULL_REQUEST, LAST_BRANCH_POINT)
 
 COMMIT_REF_MERGE_PATTERN = re.compile(r"Merge [0-9a-f]+ into [0-9a-f]+")
 SEMANTIC_VERSION_PATTERN = re.compile(r"tag: (\d+\.\d+\.\d+)")
@@ -55,14 +56,11 @@ class ReleaseNoteCompiler:
         pull_request_url=None,
         api_token=None,
         header="## Contents",
-        list_item_symbol="- [x] ",
+        list_item_symbol="- [x]",
         commit_codes_to_headings_mapping=None,
     ):
-        if stop_point.upper() not in {LAST_RELEASE, LAST_PULL_REQUEST, LAST_BRANCH_POINT}:
-            raise ValueError(
-                f"`stop_point` must be one of {LAST_RELEASE, LAST_PULL_REQUEST, LAST_BRANCH_POINT!r}; received "
-                f"{stop_point!r}."
-            )
+        if stop_point.upper() not in STOP_POINTS:
+            raise ValueError(f"`stop_point` must be one of {STOP_POINTS!r}; received {stop_point!r}.")
 
         self.stop_point = stop_point.upper()
 
@@ -262,15 +260,59 @@ class ReleaseNoteCompiler:
             if len(notes) == 0:
                 continue
 
-            note_lines = "\n".join(self.list_item_symbol + note for note in notes)
+            note_lines = "\n".join(self.list_item_symbol + " " + note for note in notes)
             release_notes_for_printing += f"{heading}\n{note_lines}\n\n"
 
         release_notes_for_printing += AUTO_GENERATION_END_INDICATOR
         return release_notes_for_printing
 
 
-def main():
-    release_notes = ReleaseNoteCompiler(*sys.argv[1:]).compile_release_notes()
+def main(argv=None):
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "stop_point",
+        choices=STOP_POINTS,
+        help="The point in the git history to stop compiling commits into the release notes.",
+    )
+
+    parser.add_argument(
+        "--pull-request_url",
+        default=None,
+        type=str,
+        help="Provide this if you want to update a pull request's description with the generated release notes. Must be provided alongside --api-token if the repository is private.",
+    )
+
+    parser.add_argument(
+        "--api-token",
+        default=None,
+        type=str,
+        help="A valid GitHub API token for the repository the pull request belongs to. There is no need to provide this if the repository is public.",
+    )
+
+    parser.add_argument(
+        "--header",
+        default="## Contents",
+        type=str,
+        help="The header (including MarkDown styling) to put the release notes under.",
+    )
+
+    parser.add_argument(
+        "--list-item-symbol",
+        default="- [x]",
+        help="The MarkDown list item symbol to use for listing commit messages in the release notes.",
+    )
+
+    args = parser.parse_args(argv)
+
+    release_notes = ReleaseNoteCompiler(
+        stop_point=args.stop_point,
+        pull_request_url=args.pull_request_url,
+        api_token=args.api_token,
+        header=args.header,
+        list_item_symbol=args.list_item_symbol,
+    ).compile_release_notes()
+
     print(release_notes)
 
 
