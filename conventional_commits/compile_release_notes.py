@@ -67,8 +67,10 @@ class ReleaseNoteCompiler:
         self.stop_point = stop_point.upper()
 
         if pull_request_url:
-            self.previous_notes = self._get_current_pull_request_description(pull_request_url, api_token)
+            self.current_pull_request = self._get_current_pull_request(pull_request_url, api_token)
+            self.previous_notes = self.current_pull_request["body"]
         else:
+            self.current_pull_request = None
             self.previous_notes = None
 
         self.header = header
@@ -76,10 +78,12 @@ class ReleaseNoteCompiler:
         self.commit_codes_to_headings_mapping = commit_codes_to_headings_mapping or COMMIT_CODES_TO_HEADINGS_MAPPING
 
         if self.stop_point == LAST_BRANCH_POINT:
-            self._branch_point = self._get_last_branch_point()
-
-            if self._branch_point is None:
+            if self.current_pull_request is not None:
+                self.base_branch = self._get_git_remote_name() + "/" + self.current_pull_request["base"]["ref"]
+            else:
                 self.stop_point = LAST_RELEASE
+
+        self.git_log = self._get_git_log()
 
     def compile_release_notes(self):
         """Compile the commit messages since the given stop point into a new set of release notes, sorting them into
@@ -118,7 +122,7 @@ class ReleaseNoteCompiler:
             )
         ).strip('"\n')
 
-    def _get_current_pull_request_description(self, pull_request_url, api_token):
+    def _get_current_pull_request(self, pull_request_url, api_token):
         """Get the current pull request description (body) from the GitHub API.
 
         :param str pull_request_url: the GitHub API URL for the pull request
@@ -130,41 +134,10 @@ class ReleaseNoteCompiler:
         else:
             headers = {"Authorization": f"token {api_token}"}
 
-        return requests.get(pull_request_url, headers=headers).json()["body"]
+        return requests.get(pull_request_url, headers=headers).json()
 
-    def _get_last_branch_point(self):
-        """Get the abbreviated commit hash of the most recent branch point (i.e. where the current branch branched off
-        another branch). If there is no branch point (e.g. there is only one branch), `None` is returned.
-
-        :return str|None:
-        """
-        graph = self._get_git_branch_graph()
-        graph_lines = graph.split("\n")
-
-        # There is no branch point if the git history is entirely linear.
-        if all(line.startswith("*") for line in graph_lines):
-            return None
-
-        # Look for the first branch point - this is the oldest commit in the first set of unbroken asterisk-preceded
-        # lines in the graph.
-        branch_point = None
-
-        for line in graph_lines:
-            # Find the oldest commit in the first set of unbroken asterisk-preceded lines in the graph.
-            if line.startswith("*"):
-                branch_point = line.split()[1]
-            else:
-                if branch_point is not None:
-                    return branch_point
-
-        return None
-
-    def _get_git_branch_graph(self):
-        """Get the one-line git log branch graph.
-
-        :return str:
-        """
-        return subprocess.run(["git", "log", "--graph", "--oneline"], capture_output=True).stdout.decode()
+    def _get_git_remote_name(self):
+        return subprocess.run(["git", "remote"], capture_output=True).stdout.strip().decode()
 
     def _get_git_log(self):
         """Get the one-line decorated git log formatted with "|" delimiting the commit hash, message, and decoration.
@@ -188,9 +161,9 @@ class ReleaseNoteCompiler:
             split_commit = commit.split("|")
 
             if len(split_commit) == 3:
-                commit_hash, message, decoration = split_commit
+                _, message, decoration = split_commit
 
-                if self._is_stop_point(commit_hash, message, decoration):
+                if self._is_stop_point(message, decoration):
                     break
 
                 # A colon separating the commit code from the commit header is required - keep commit messages that
@@ -210,16 +183,15 @@ class ReleaseNoteCompiler:
 
         return parsed_commits, unparsed_commits
 
-    def _is_stop_point(self, commit_hash, message, decoration):
+    def _is_stop_point(self, message, decoration):
         """Check if this commit header is the stop point for collecting commits for the release notes.
 
-        :param str commit_hash:
         :param str message:
         :param str decoration:
         :return bool:
         """
         if self.stop_point == LAST_BRANCH_POINT:
-            if commit_hash == self._branch_point:
+            if self.base_branch in decoration:
                 return True
 
         if self.stop_point == LAST_RELEASE:
