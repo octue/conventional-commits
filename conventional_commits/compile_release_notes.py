@@ -294,13 +294,13 @@ def main(argv=None):
         "--header",
         default="## Contents",
         type=str,
-        help="The header (including MarkDown styling) to put the release notes under.",
+        help="The header (including MarkDown styling) to put the release notes under. Default is '## Contents'",
     )
 
     parser.add_argument(
         "--list-item-symbol",
         default="- [x]",
-        help="The MarkDown list item symbol to use for listing commit messages in the release notes.",
+        help="The MarkDown list item symbol to use for listing commit messages in the release notes. Default is '- [x]'",
     )
 
     args = parser.parse_args(argv)
