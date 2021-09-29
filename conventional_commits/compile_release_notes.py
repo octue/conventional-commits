@@ -277,7 +277,7 @@ def main(argv=None):
     )
 
     parser.add_argument(
-        "--pull-request_url",
+        "--pull-request-url",
         default=None,
         type=str,
         help="Provide this if you want to update a pull request's description with the generated release notes. Must be provided alongside --api-token if the repository is private.",
