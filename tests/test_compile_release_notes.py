@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 
-from conventional_commits.compile_release_notes import ReleaseNotesCompiler
+from conventional_commits.compile_release_notes import ReleaseNotesCompiler, main
 
 
 MOCK_GIT_LOG = "\n".join(
@@ -571,3 +571,24 @@ class TestReleaseNotesCompiler(unittest.TestCase):
             ]
         )
         self.assertEqual(release_notes, expected_release_notes)
+
+    def test_cli(self):
+        """Test that the CLI passes its arguments to the release notes compiler correctly."""
+        with patch("conventional_commits.compile_release_notes.ReleaseNotesCompiler") as mock_compiler:
+            main(
+                [
+                    "LAST_RELEASE",
+                    "--pull-request-url=https://github.com/blah/blah/pulls/32",
+                    "--api-token=github-token",
+                    "--header=# My heading",
+                    "--list-item-symbol=-",
+                ]
+            )
+
+        mock_compiler.assert_called_with(
+            stop_point="LAST_RELEASE",
+            pull_request_url="https://github.com/blah/blah/pulls/32",
+            api_token="github-token",
+            header="# My heading",
+            list_item_symbol="-",
+        )
