@@ -194,11 +194,11 @@ class ReleaseNoteCompiler:
             if self.base_branch in decoration:
                 return True
 
-        if self.stop_point == LAST_RELEASE:
+        elif self.stop_point == LAST_RELEASE:
             if "tag" in decoration:
                 return bool(SEMANTIC_VERSION_PATTERN.search(decoration))
 
-        if self.stop_point == LAST_PULL_REQUEST:
+        elif self.stop_point == LAST_PULL_REQUEST:
             return PULL_REQUEST_INDICATOR in message
 
     def _categorise_commit_messages(self, parsed_commits, unparsed_commits):
