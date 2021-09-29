@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 
-from conventional_commits.compile_release_notes import ReleaseNoteCompiler
+from conventional_commits.compile_release_notes import ReleaseNotesCompiler
 
 
 MOCK_GIT_LOG = "\n".join(
@@ -29,23 +29,23 @@ EXPECTED_LAST_PULL_REQUEST_RELEASE_NOTES_WITH_NON_GENERATED_SECTION = "\n".join(
 )
 
 
-class TestReleaseNoteCompiler(unittest.TestCase):
-    GIT_LOG_METHOD_PATH = "conventional_commits.compile_release_notes.ReleaseNoteCompiler._get_git_log"
+class TestReleaseNotesCompiler(unittest.TestCase):
+    GIT_LOG_METHOD_PATH = "conventional_commits.compile_release_notes.ReleaseNotesCompiler._get_git_log"
     GET_BRANCH_POINT_METHOD_PATH = (
-        "conventional_commits.compile_release_notes.ReleaseNoteCompiler._get_last_branch_point"
+        "conventional_commits.compile_release_notes.ReleaseNotesCompiler._get_last_branch_point"
     )
     GET_GIT_BRANCH_GRAPH_METHOD_PATH = (
-        "conventional_commits.compile_release_notes.ReleaseNoteCompiler._get_git_branch_graph"
+        "conventional_commits.compile_release_notes.ReleaseNotesCompiler._get_git_branch_graph"
     )
     GET_PR_DESCRIPTION_PATH = (
-        "conventional_commits.compile_release_notes.ReleaseNoteCompiler._get_current_pull_request_description"
+        "conventional_commits.compile_release_notes.ReleaseNotesCompiler._get_current_pull_request_description"
     )
     MOCK_PULL_REQUEST_URL = "https://api.github.com/repos/blah/my-repo/pulls/11"
 
     def test_unsupported_stop_point_results_in_error(self):
         """Test that using an unsupported stop point results in a ValueError."""
         with self.assertRaises(ValueError):
-            ReleaseNoteCompiler(stop_point="blah", pull_request_url="")
+            ReleaseNotesCompiler(stop_point="blah", pull_request_url="")
 
     def test_skip_release_notes_auto_generations(self):
         """Test that release notes autogeneration is skipped if the skip indicator is present in the previous notes."""
@@ -56,7 +56,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=MOCK_GIT_LOG):
             with patch(self.GET_PR_DESCRIPTION_PATH, return_value=previous_notes):
-                release_notes = ReleaseNoteCompiler(
+                release_notes = ReleaseNotesCompiler(
                     stop_point="LAST_PULL_REQUEST", pull_request_url=self.MOCK_PULL_REQUEST_URL
                 ).compile_release_notes()
 
@@ -66,7 +66,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
         """Test generating release notes that stop at the last release."""
         with patch(self.GIT_LOG_METHOD_PATH, return_value=MOCK_GIT_LOG):
             with patch(self.GET_PR_DESCRIPTION_PATH, return_value=""):
-                release_notes = ReleaseNoteCompiler(
+                release_notes = ReleaseNotesCompiler(
                     stop_point="LAST_RELEASE", pull_request_url=self.MOCK_PULL_REQUEST_URL
                 ).compile_release_notes()
 
@@ -91,7 +91,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
         """Test generating release notes that stop at the last pull request merge."""
         with patch(self.GIT_LOG_METHOD_PATH, return_value=MOCK_GIT_LOG):
             with patch(self.GET_PR_DESCRIPTION_PATH, return_value=""):
-                release_notes = ReleaseNoteCompiler(
+                release_notes = ReleaseNotesCompiler(
                     stop_point="LAST_PULL_REQUEST", pull_request_url=self.MOCK_PULL_REQUEST_URL
                 ).compile_release_notes()
 
@@ -110,7 +110,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
         self.assertEqual(release_notes, expected)
 
     def test_get_last_branch_point_with_fully_ahead_branch(self):
-        """Test that the `ReleaseNoteCompiler._get_last_branch_point` method selects the correct commit hash from the
+        """Test that the `ReleaseNotesCompiler._get_last_branch_point` method selects the correct commit hash from the
         git log branch graph when the current branch is fully-ahead (i.e. ahead of all other branches).
         """
         mock_git_log_graph = "\n".join(
@@ -121,9 +121,9 @@ class TestReleaseNoteCompiler(unittest.TestCase):
                 "*   85f6612 (tag: 0.1.0, origin/main, main) MRG: Merge pull request #21",
                 '|"',
                 "| * b1148e2 (fix/only-use-extra-commits-on-branch-for-release-note) OPS: Update release note workflow",
-                "| * 9c62f4e FIX: Return None if no branch point is found by ReleaseNoteCompiler",
+                "| * 9c62f4e FIX: Return None if no branch point is found by ReleaseNotesCompiler",
                 "| * ec6dd01 OPS: Fix mkver.conf",
-                "| * ff4b837 FEA: Add LAST_BRANCH_POINT stop point for ReleaseNoteCompiler",
+                "| * ff4b837 FEA: Add LAST_BRANCH_POINT stop point for ReleaseNotesCompiler",
                 "|/",
                 "*   3e7dc54 (tag: 0.0.13) MRG: Merge pull request #20 from octue/refactor/compile-regex-once",
                 '|"',
@@ -132,10 +132,10 @@ class TestReleaseNoteCompiler(unittest.TestCase):
         )
 
         with patch(self.GET_GIT_BRANCH_GRAPH_METHOD_PATH, return_value=mock_git_log_graph):
-            self.assertEqual(ReleaseNoteCompiler(stop_point="LAST_BRANCH_POINT")._get_last_branch_point(), "85f6612")
+            self.assertEqual(ReleaseNotesCompiler(stop_point="LAST_BRANCH_POINT")._get_last_branch_point(), "85f6612")
 
     def test_get_last_branch_point_with_non_fully_ahead_branch(self):
-        """Test that the `ReleaseNoteCompiler._get_last_branch_point` method selects the correct commit hash from the
+        """Test that the `ReleaseNotesCompiler._get_last_branch_point` method selects the correct commit hash from the
         git log branch graph when the current branch is not fully-ahead (i.e. not ahead of all other branches).
         """
         mock_git_log_graph = "\n".join(
@@ -155,7 +155,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
         )
 
         with patch(self.GET_GIT_BRANCH_GRAPH_METHOD_PATH, return_value=mock_git_log_graph):
-            self.assertEqual(ReleaseNoteCompiler(stop_point="LAST_BRANCH_POINT")._get_last_branch_point(), "6589a8e")
+            self.assertEqual(ReleaseNotesCompiler(stop_point="LAST_BRANCH_POINT")._get_last_branch_point(), "6589a8e")
 
     def test_branch_point_is_none_if_no_branch_point_is_found(self):
         """Test that the branch point is `None` if no branch point is found."""
@@ -168,7 +168,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
         )
 
         with patch(self.GET_GIT_BRANCH_GRAPH_METHOD_PATH, return_value=mock_git_log_graph):
-            self.assertIsNone(ReleaseNoteCompiler(stop_point="LAST_BRANCH_POINT")._get_last_branch_point())
+            self.assertIsNone(ReleaseNotesCompiler(stop_point="LAST_BRANCH_POINT")._get_last_branch_point())
 
     def test_branch_point_stop_point(self):
         """Test generating release notes that stop at the last branch point."""
@@ -187,7 +187,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=mock_git_log):
             with patch(self.GET_BRANCH_POINT_METHOD_PATH, return_value="6589a8e"):
-                release_notes = ReleaseNoteCompiler(stop_point="LAST_BRANCH_POINT").compile_release_notes()
+                release_notes = ReleaseNotesCompiler(stop_point="LAST_BRANCH_POINT").compile_release_notes()
 
         expected = "\n".join(
             [
@@ -214,7 +214,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
         the given stop point is LAST_BRANCH_POINT.
         """
         with patch(self.GET_BRANCH_POINT_METHOD_PATH, return_value=None):
-            release_note_compiler = ReleaseNoteCompiler(stop_point="LAST_BRANCH_POINT")
+            release_note_compiler = ReleaseNotesCompiler(stop_point="LAST_BRANCH_POINT")
 
         self.assertEqual(release_note_compiler.stop_point, "LAST_RELEASE")
 
@@ -222,7 +222,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
         """Test that previous release notes are not overwritten when the autogeneration markers are missing."""
         with patch(self.GIT_LOG_METHOD_PATH, return_value=MOCK_GIT_LOG):
             with patch(self.GET_PR_DESCRIPTION_PATH, return_value="BLAH BLAH BLAH"):
-                release_notes = ReleaseNoteCompiler(
+                release_notes = ReleaseNotesCompiler(
                     stop_point="LAST_PULL_REQUEST", pull_request_url=self.MOCK_PULL_REQUEST_URL
                 ).compile_release_notes()
 
@@ -251,7 +251,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=MOCK_GIT_LOG):
             with patch(self.GET_PR_DESCRIPTION_PATH, return_value=previous_notes):
-                release_notes = ReleaseNoteCompiler(
+                release_notes = ReleaseNotesCompiler(
                     stop_point="LAST_PULL_REQUEST", pull_request_url=self.MOCK_PULL_REQUEST_URL
                 ).compile_release_notes()
 
@@ -267,7 +267,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=MOCK_GIT_LOG):
             with patch(self.GET_PR_DESCRIPTION_PATH, return_value=previous_notes):
-                release_notes = ReleaseNoteCompiler(
+                release_notes = ReleaseNotesCompiler(
                     stop_point="LAST_PULL_REQUEST", pull_request_url=self.MOCK_PULL_REQUEST_URL
                 ).compile_release_notes()
 
@@ -281,7 +281,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=MOCK_GIT_LOG):
             with patch(self.GET_PR_DESCRIPTION_PATH, return_value=previous_notes):
-                release_notes = ReleaseNoteCompiler(
+                release_notes = ReleaseNotesCompiler(
                     stop_point="LAST_PULL_REQUEST", pull_request_url=self.MOCK_PULL_REQUEST_URL
                 ).compile_release_notes()
 
@@ -305,7 +305,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=MOCK_GIT_LOG):
             with patch(self.GET_PR_DESCRIPTION_PATH, return_value=previous_notes):
-                release_notes = ReleaseNoteCompiler(
+                release_notes = ReleaseNotesCompiler(
                     stop_point="LAST_PULL_REQUEST", pull_request_url=self.MOCK_PULL_REQUEST_URL
                 ).compile_release_notes()
 
@@ -316,7 +316,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
         mock_git_log = "\n".join(["fabd2ab|This is not in the right format|", "27dcef0|FIX: Fix a bug|"])
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=mock_git_log):
-            release_notes = ReleaseNoteCompiler(stop_point="LAST_PULL_REQUEST").compile_release_notes()
+            release_notes = ReleaseNotesCompiler(stop_point="LAST_PULL_REQUEST").compile_release_notes()
 
         expected = "\n".join(
             [
@@ -341,7 +341,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=mock_git_log):
             with patch(self.GET_PR_DESCRIPTION_PATH, return_value=""):
-                release_notes = ReleaseNoteCompiler(
+                release_notes = ReleaseNotesCompiler(
                     stop_point="LAST_PULL_REQUEST", pull_request_url=self.MOCK_PULL_REQUEST_URL
                 ).compile_release_notes()
 
@@ -373,7 +373,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=MOCK_GIT_LOG):
             with patch(self.GET_PR_DESCRIPTION_PATH, return_value=previous_notes):
-                release_notes_1 = ReleaseNoteCompiler(
+                release_notes_1 = ReleaseNotesCompiler(
                     stop_point="LAST_PULL_REQUEST", pull_request_url=self.MOCK_PULL_REQUEST_URL
                 ).compile_release_notes()
 
@@ -383,7 +383,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
         # Run the compiler on the new git log to update the previous set of release notes.
         with patch(self.GIT_LOG_METHOD_PATH, return_value=updated_mock_git_log):
             with patch(self.GET_PR_DESCRIPTION_PATH, return_value=release_notes_1):
-                release_notes_2 = ReleaseNoteCompiler(
+                release_notes_2 = ReleaseNotesCompiler(
                     stop_point="LAST_PULL_REQUEST", pull_request_url=self.MOCK_PULL_REQUEST_URL
                 ).compile_release_notes()
 
@@ -438,7 +438,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
         )
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=mock_git_log):
-            release_notes = ReleaseNoteCompiler(stop_point="LAST_RELEASE").compile_release_notes()
+            release_notes = ReleaseNotesCompiler(stop_point="LAST_RELEASE").compile_release_notes()
 
         expected_release_notes = "\n".join(
             [
@@ -497,7 +497,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
         )
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=mock_git_log):
-            release_notes = ReleaseNoteCompiler(stop_point="LAST_PULL_REQUEST").compile_release_notes()
+            release_notes = ReleaseNotesCompiler(stop_point="LAST_PULL_REQUEST").compile_release_notes()
 
         expected_release_notes = "\n".join(
             [
@@ -529,7 +529,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
         )
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=mock_git_log):
-            release_notes = ReleaseNoteCompiler(stop_point="LAST_RELEASE").compile_release_notes()
+            release_notes = ReleaseNotesCompiler(stop_point="LAST_RELEASE").compile_release_notes()
 
         expected_release_notes = "\n".join(
             [
@@ -556,7 +556,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
         )
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=mock_git_log):
-            release_notes = ReleaseNoteCompiler(stop_point="LAST_RELEASE").compile_release_notes()
+            release_notes = ReleaseNotesCompiler(stop_point="LAST_RELEASE").compile_release_notes()
 
         expected_release_notes = "\n".join(
             [
