@@ -79,7 +79,7 @@ class ReleaseNoteCompiler:
 
         if self.stop_point == LAST_BRANCH_POINT:
             if self.current_pull_request is not None:
-                self.base_branch = self._get_git_remote_name() + "/" + self.current_pull_request["base"]["ref"]
+                self.base_branch = self.current_pull_request["base"]["ref"]
             else:
                 self.stop_point = LAST_RELEASE
 
@@ -123,11 +123,11 @@ class ReleaseNoteCompiler:
         ).strip('"\n')
 
     def _get_current_pull_request(self, pull_request_url, api_token):
-        """Get the current pull request description (body) from the GitHub API.
+        """Get the current pull request from the GitHub API.
 
         :param str pull_request_url: the GitHub API URL for the pull request
         :param str|None api_token: GitHub API token
-        :return str:
+        :return dict:
         """
         if api_token is None:
             headers = {}
@@ -135,13 +135,6 @@ class ReleaseNoteCompiler:
             headers = {"Authorization": f"token {api_token}"}
 
         return requests.get(pull_request_url, headers=headers).json()
-
-    def _get_git_remote_name(self):
-        """Get the name of the git remote (usually "origin").
-
-        :return str:
-        """
-        return subprocess.run(["git", "remote"], capture_output=True).stdout.strip().decode()
 
     def _get_git_log(self):
         """Get the one-line decorated git log formatted with "|" delimiting the commit hash, message, and decoration.

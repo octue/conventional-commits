@@ -34,7 +34,6 @@ class TestReleaseNoteCompiler(unittest.TestCase):
     GET_CURRENT_PULL_REQUEST_PATH = (
         "conventional_commits.compile_release_notes.ReleaseNoteCompiler._get_current_pull_request"
     )
-    GET_GIT_REMOTE_NAME_PATH = "conventional_commits.compile_release_notes.ReleaseNoteCompiler._get_git_remote_name"
     MOCK_PULL_REQUEST_URL = "https://api.github.com/repos/blah/my-repo/pulls/11"
 
     def test_unsupported_stop_point_results_in_error(self):
@@ -112,7 +111,7 @@ class TestReleaseNoteCompiler(unittest.TestCase):
                 "358ffd5|REF: Move stop point checking into separate method|",
                 "44927c6|FIX: Fix LAST_PULL_REQUEST stop point bug|",
                 "7cdc980|FIX: Ensure uncategorised commits are not lost| (fix/allow-extra-colons-in-commit-message)",
-                "741bb8d|OPS: Increase version to 0.0.11|  (tag: 0.0.11, origin/my-base-branch)",
+                "741bb8d|OPS: Increase version to 0.0.11|  (tag: 0.0.11, my-base-branch)",
                 "27092a4|FIX: Allow extra colons in commit headers in release notes compiler|",
                 "6dcdc41|MRG: Merge pull request #17 from octue/fix/fix-release-notes-stop-point-bug| (tag: 0.0.10)",
             ]
@@ -122,10 +121,9 @@ class TestReleaseNoteCompiler(unittest.TestCase):
             with patch(
                 self.GET_CURRENT_PULL_REQUEST_PATH, return_value={"body": "", "base": {"ref": "my-base-branch"}}
             ):
-                with patch(self.GET_GIT_REMOTE_NAME_PATH, return_value="origin"):
-                    release_notes = ReleaseNoteCompiler(
-                        stop_point="LAST_BRANCH_POINT", pull_request_url=self.MOCK_PULL_REQUEST_URL
-                    ).compile_release_notes()
+                release_notes = ReleaseNoteCompiler(
+                    stop_point="LAST_BRANCH_POINT", pull_request_url=self.MOCK_PULL_REQUEST_URL
+                ).compile_release_notes()
 
         expected = "\n".join(
             [
