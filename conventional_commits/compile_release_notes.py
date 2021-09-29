@@ -137,6 +137,10 @@ class ReleaseNoteCompiler:
         return requests.get(pull_request_url, headers=headers).json()
 
     def _get_git_remote_name(self):
+        """Get the name of the git remote (usually "origin").
+
+        :return str:
+        """
         return subprocess.run(["git", "remote"], capture_output=True).stdout.strip().decode()
 
     def _get_git_log(self):
