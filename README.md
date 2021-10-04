@@ -162,8 +162,9 @@ look at a file of the version source file type at a different location.
 #### Extra requirements
 Note that this command requires:
 * `git-mkver` to be installed and available in the shell as `git-mkver`
-* A `mkver.conf` file to be present in the working directory (usually the repository root) -
-  [see sample here](examples/semantic_version_checker/mkver.conf).
+* A `mkver.conf` file to be present in the working directory (usually the repository root):
+  - [See an example for non-beta packages](examples/semantic_version_checker/mkver.conf) (full semantic versioning)
+  - [See an example for packages in beta](examples/semantic_version_checker/mkver-for-beta-versions.conf) (keeps the version below `1.0.0`)
 
 
 ### Usage
