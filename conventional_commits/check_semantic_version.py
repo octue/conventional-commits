@@ -74,12 +74,24 @@ def main(argv=None):
         )
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("version_source")
-    parser.add_argument("--file", default=None)
+
+    parser.add_argument(
+        "version_source_type",
+        choices=list(VERSION_PARAMETERS.keys()),
+        help=f"The type of file to look for the version in. It must be one of {list(VERSION_PARAMETERS.keys())} and is "
+        f"assumed to be in the repository root unless the --file option is also given",
+    )
+
+    parser.add_argument(
+        "--file",
+        default=None,
+        type=str,
+        help="The path to the version source file if it isn't in the repository root e.g. path/to/setup.py",
+    )
 
     args = parser.parse_args(argv)
 
-    current_version = get_current_version(version_source=args.version_source, version_source_file=args.file)
+    current_version = get_current_version(version_source=args.version_source_type, version_source_file=args.file)
     expected_semantic_version = get_expected_semantic_version()
 
     if not current_version or current_version == "null":
