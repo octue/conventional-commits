@@ -122,7 +122,7 @@ class TestReleaseNotesCompiler(unittest.TestCase):
                 self.GET_CURRENT_PULL_REQUEST_PATH, return_value={"body": "", "base": {"ref": "my-base-branch"}}
             ):
                 release_notes = ReleaseNotesCompiler(
-                    stop_point="LAST_BRANCH_POINT", pull_request_url=self.MOCK_PULL_REQUEST_URL
+                    stop_point="PULL_REQUEST_START", pull_request_url=self.MOCK_PULL_REQUEST_URL
                 ).compile_release_notes()
 
         expected = "\n".join(
@@ -148,7 +148,7 @@ class TestReleaseNotesCompiler(unittest.TestCase):
 
     def test_compiler_reverts_to_last_release_stop_point_if_branch_point_is_not_found(self):
         """Ensure the release note compiler reverts to the LAST_RELEASE stop point if no pull request URL is provided."""
-        release_note_compiler = ReleaseNotesCompiler(stop_point="LAST_BRANCH_POINT")
+        release_note_compiler = ReleaseNotesCompiler(stop_point="PULL_REQUEST_START")
         self.assertEqual(release_note_compiler.stop_point, "LAST_RELEASE")
 
     def test_with_previous_release_notes_missing_autogeneration_markers(self):
