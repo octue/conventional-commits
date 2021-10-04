@@ -205,10 +205,10 @@ Note that these comment lines are invisible in rendered markdown.
 ### Usage
 ```shell
 usage: compile-release-notes [-h] [--pull-request-url PULL_REQUEST_URL] [--api-token API_TOKEN] [--header HEADER] [--list-item-symbol LIST_ITEM_SYMBOL]
-                             {LAST_RELEASE,LAST_PULL_REQUEST,LAST_BRANCH_POINT}
+                             {LAST_RELEASE,LAST_PULL_REQUEST,PULL_REQUEST_START}
 
 positional arguments:
-  {LAST_RELEASE,LAST_PULL_REQUEST,LAST_BRANCH_POINT}
+  {LAST_RELEASE,LAST_PULL_REQUEST,PULL_REQUEST_START}
                         The point in the git history to stop compiling commits into the release notes.
 
 optional arguments:

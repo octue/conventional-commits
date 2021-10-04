@@ -6,8 +6,8 @@ import requests
 
 LAST_RELEASE = "LAST_RELEASE"
 LAST_PULL_REQUEST = "LAST_PULL_REQUEST"
-LAST_BRANCH_POINT = "LAST_BRANCH_POINT"
-STOP_POINTS = (LAST_RELEASE, LAST_PULL_REQUEST, LAST_BRANCH_POINT)
+PULL_REQUEST_START = "PULL_REQUEST_START"
+STOP_POINTS = (LAST_RELEASE, LAST_PULL_REQUEST, PULL_REQUEST_START)
 
 COMMIT_REF_MERGE_PATTERN = re.compile(r"Merge [0-9a-f]+ into [0-9a-f]+")
 SEMANTIC_VERSION_PATTERN = re.compile(r"tag: (\d+\.\d+\.\d+)")
@@ -75,7 +75,7 @@ class ReleaseNotesCompiler:
         self.list_item_symbol = list_item_symbol
         self.commit_codes_to_headings_mapping = commit_codes_to_headings_mapping or COMMIT_CODES_TO_HEADINGS_MAPPING
 
-        if self.stop_point == LAST_BRANCH_POINT:
+        if self.stop_point == PULL_REQUEST_START:
             if self.current_pull_request is not None:
                 self.base_branch = self.current_pull_request["base"]["ref"]
             else:
@@ -183,7 +183,7 @@ class ReleaseNotesCompiler:
         :param str decoration:
         :return bool:
         """
-        if self.stop_point == LAST_BRANCH_POINT:
+        if self.stop_point == PULL_REQUEST_START:
             if self.base_branch in decoration:
                 return True
 
