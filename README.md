@@ -220,7 +220,7 @@ optional arguments:
                         A valid GitHub API token for the repository the pull request belongs to. There is no need to provide this if the repository is public.
   --header HEADER       The header (including MarkDown styling) to put the release notes under. Default is '## Contents'
   --list-item-symbol LIST_ITEM_SYMBOL
-                        The MarkDown list item symbol to use for listing commit messages in the release notes. Default is '- [x]'
+                        The MarkDown list item symbol to use for listing commit messages in the release notes. Default is '- '
 ```
 
 ### GitHub workflows

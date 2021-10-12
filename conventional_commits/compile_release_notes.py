@@ -56,7 +56,7 @@ class ReleaseNotesCompiler:
         pull_request_url=None,
         api_token=None,
         header="## Contents",
-        list_item_symbol="- [x]",
+        list_item_symbol="-",
         commit_codes_to_headings_mapping=None,
     ):
         if stop_point.upper() not in STOP_POINTS:
@@ -266,8 +266,8 @@ def main(argv=None):
 
     parser.add_argument(
         "--list-item-symbol",
-        default="- [x]",
-        help="The MarkDown list item symbol to use for listing commit messages in the release notes. Default is '- [x]'",
+        default="-",
+        help="The MarkDown list item symbol to use for listing commit messages in the release notes. Default is '- '",
     )
 
     args = parser.parse_args(argv)
