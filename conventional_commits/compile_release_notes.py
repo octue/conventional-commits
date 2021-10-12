@@ -241,15 +241,11 @@ class ReleaseNotesCompiler:
         :return str:
         """
         release_notes_for_printing = f"{AUTO_GENERATION_START_INDICATOR}\n{self.header}\n"
+
         breaking_change_count = categorised_commit_messages.pop(BREAKING_CHANGE_COUNT_KEY)
 
         if breaking_change_count > 0:
-            if breaking_change_count == 1:
-                notification = f"There is {breaking_change_count} breaking change."
-            else:
-                notification = f"There are {breaking_change_count} breaking changes."
-
-            release_notes_for_printing += "**IMPORTANT:** " + notification + "\n"
+            release_notes_for_printing += self._create_breaking_change_notification(breaking_change_count)
 
         release_notes_for_printing += "\n"
 
@@ -263,6 +259,20 @@ class ReleaseNotesCompiler:
 
         release_notes_for_printing += AUTO_GENERATION_END_INDICATOR
         return release_notes_for_printing
+
+    def _create_breaking_change_notification(self, breaking_change_count):
+        """Create a notification warning of the number of breaking changes.
+
+        :param str release_notes_for_printing:
+        :param dict categorised_commit_messages:
+        :return str: release notes with notification added if there are breaking changes
+        """
+        if breaking_change_count == 1:
+            notification = f"There is {breaking_change_count} breaking change."
+        else:
+            notification = f"There are {breaking_change_count} breaking changes."
+
+        return "**IMPORTANT:** " + notification + "\n"
 
 
 def main(argv=None):
