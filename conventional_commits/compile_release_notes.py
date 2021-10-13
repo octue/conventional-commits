@@ -142,49 +142,56 @@ class ReleaseNotesCompiler:
         return requests.get(pull_request_url, headers=headers).json()
 
     def _get_git_log(self):
-        """Get the one-line decorated git log formatted with "|" delimiting the commit hash, message, and decoration.
+        """Get the one-line decorated git log formatted in the pattern of "hash|§header|§body|§decoration@@@".
+
+        Explanation:
+        * "|§" delimits the hash from the header, the header from the potentially multi-line body, and the body from the
+          decoration
+        * "@@@" indicates the end of the git log line. "\n" cannot be used as commit bodies can contain newlines, so
+        they can't be used by themselves to delimit git log entries.
+        * The specific characters used for the delimiters have been chosen so that they are very uncommon to reduce
+          delimiting errors
 
         :return str:
         """
-        git_log = subprocess.run(["git", "log", "--pretty=format:%h|%s|%b|%d"], capture_output=True).stdout.strip()
+        return (
+            subprocess.run(["git", "log", "--pretty=format:%h|§%s|§%b|§%d@@@"], capture_output=True)
+            .stdout.strip()
+            .decode()
+        )
 
-        # Ensure commit message bodies always appear on one line
-        return git_log.replace(b"\n|", b"|").decode()
-
-    def _parse_commit_messages(self, formatted_oneline_git_log):
+    def _parse_commit_messages(self, formatted_one_line_git_log):
         """Parse commit messages from the git log (formatted using `--pretty=format:%s|%d`) until the stop point is
         reached. The parsed commit messages are returned separately to any that fail to parse.
 
-        :param str formatted_oneline_git_log:
+        :param str formatted_one_line_git_log:
         :return list(tuple), list(str):
         """
         parsed_commits = []
         unparsed_commits = []
 
-        for commit in formatted_oneline_git_log.splitlines():
-            # The pipe symbol "|" is used to delimit the commit header from its decoration.
-            split_commit = commit.split("|")
+        commits = formatted_one_line_git_log.split("@@@")
 
-            if len(split_commit) == 4:
-                _, header, body, decoration = split_commit
+        for commit in commits:
+            hash, header, body, decoration = commit.split("|§")
 
-                if self._is_stop_point(header, decoration):
-                    break
+            if self._is_stop_point(header, decoration):
+                break
 
-                # A colon separating the commit code from the commit header is required - keep commit messages that
-                # don't conform to this but put them into an unparsed category. Ignore commits that are merges of one
-                # commit ref into another (GitHub Actions produces these - they don't appear in the actual history of
-                # the branch so can be safely ignored when making release notes).
-                if ":" not in header:
-                    if not COMMIT_REF_MERGE_PATTERN.search(header):
-                        unparsed_commits.append(header.strip())
-                    continue
+            # A colon separating the commit code from the commit header is required - keep commit messages that
+            # don't conform to this but put them into an unparsed category. Ignore commits that are merges of one
+            # commit ref into another (GitHub Actions produces these - they don't appear in the actual history of
+            # the branch so can be safely ignored when making release notes).
+            if ":" not in header:
+                if not COMMIT_REF_MERGE_PATTERN.search(header):
+                    unparsed_commits.append(header.strip())
+                continue
 
-                # Allow commit headers with extra colons.
-                code, *header = header.split(":")
-                header = ":".join(header)
+            # Allow commit headers with extra colons.
+            code, *header = header.split(":")
+            header = ":".join(header)
 
-                parsed_commits.append((code.strip(), header.strip(), body.strip(), decoration.strip()))
+            parsed_commits.append((code.strip(), header.strip(), body.strip(), decoration.strip()))
 
         return parsed_commits, unparsed_commits
 

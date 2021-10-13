@@ -4,13 +4,13 @@ from unittest.mock import patch
 from conventional_commits.compile_release_notes import ReleaseNotesCompiler, main
 
 
-MOCK_GIT_LOG = "\n".join(
+MOCK_GIT_LOG = "@@@\n".join(
     [
-        "3e7dc54|REF: Merge commit message checker modules|| (HEAD -> refactor/test-release-notes-generator, origin/refactor/test-release-notes-generator)",
-        "fabd2ab|MRG: Merge pull request #3 from octue/feature/add-other-conventional-commit-ci-components||",
-        "ef77729|CHO: Remove hook installation from branch|| (tag: 0.0.3, origin/main, origin/HEAD, main)",
-        "b043bc8|ENH: Support getting versions from poetry and npm||",
-        "27dcef0|FIX: Fix semantic version script; add missing config||",
+        "3e7dc54|§REF: Merge commit message checker modules|§|§ (HEAD -> refactor/test-release-notes-generator, origin/refactor/test-release-notes-generator)",
+        "fabd2ab|§MRG: Merge pull request #3 from octue/feature/add-other-conventional-commit-ci-components|§|§",
+        "ef77729|§CHO: Remove hook installation from branch|§|§ (tag: 0.0.3, origin/main, origin/HEAD, main)",
+        "b043bc8|§ENH: Support getting versions from poetry and npm|§|§",
+        "27dcef0|§FIX: Fix semantic version script; add missing config|§|§",
     ]
 )
 
@@ -105,15 +105,15 @@ class TestReleaseNotesCompiler(unittest.TestCase):
 
     def test_branch_point_stop_point(self):
         """Test generating release notes that stop at the last branch point."""
-        mock_git_log = "\n".join(
+        mock_git_log = "@@@\n".join(
             [
-                "27dcef0|TST: Improve presentation of long strings|| (fix/fix-other-release-notes-stop-point-bug)",
-                "358ffd5|REF: Move stop point checking into separate method||",
-                "44927c6|FIX: Fix LAST_PULL_REQUEST stop point bug||",
-                "7cdc980|FIX: Ensure uncategorised commits are not lost|| (fix/allow-extra-colons-in-commit-message)",
-                "741bb8d|OPS: Increase version to 0.0.11|| (tag: 0.0.11, my-base-branch)",
-                "27092a4|FIX: Allow extra colons in commit headers in release notes compiler||",
-                "6dcdc41|MRG: Merge pull request #17 from octue/fix/fix-release-notes-stop-point-bug|| (tag: 0.0.10)",
+                "27dcef0|§TST: Improve presentation of long strings|§|§ (fix/fix-other-release-notes-stop-point-bug)",
+                "358ffd5|§REF: Move stop point checking into separate method|§|§",
+                "44927c6|§FIX: Fix LAST_PULL_REQUEST stop point bug|§|§",
+                "7cdc980|§FIX: Ensure uncategorised commits are not lost|§|§ (fix/allow-extra-colons-in-commit-message)",
+                "741bb8d|§OPS: Increase version to 0.0.11|§|§ (tag: 0.0.11, my-base-branch)",
+                "27092a4|§FIX: Allow extra colons in commit headers in release notes compiler|§|§",
+                "6dcdc41|§MRG: Merge pull request #17 from octue/fix/fix-release-notes-stop-point-bug|§|§ (tag: 0.0.10)",
             ]
         )
 
@@ -249,7 +249,7 @@ class TestReleaseNotesCompiler(unittest.TestCase):
 
     def test_commit_messages_in_non_standard_format_are_left_uncategorised(self):
         """Test that commit messages in a non-standard format are put under an uncategorised heading."""
-        mock_git_log = "\n".join(["fabd2ab|This is not in the right format||", "27dcef0|FIX: Fix a bug||"])
+        mock_git_log = "fabd2ab|§This is not in the right format|§|§@@@\n27dcef0|§FIX: Fix a bug|§|§"
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=mock_git_log):
             release_notes = ReleaseNotesCompiler(stop_point="LAST_PULL_REQUEST").compile_release_notes()
@@ -273,7 +273,7 @@ class TestReleaseNotesCompiler(unittest.TestCase):
 
     def test_commit_messages_with_unrecognised_commit_codes_are_categorised_as_other(self):
         """Test that commit messages with an unrecognised commit code are categorised under "other"."""
-        mock_git_log = "\n".join(["27dcef0|BAM: An unrecognised commit code||", "fabd2ab|FIX: Fix a bug||"])
+        mock_git_log = "27dcef0|§BAM: An unrecognised commit code|§|§@@@\nfabd2ab|§FIX: Fix a bug|§|§"
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=mock_git_log):
             with patch(self.GET_CURRENT_PULL_REQUEST_PATH, return_value={"body": ""}):
@@ -314,7 +314,7 @@ class TestReleaseNotesCompiler(unittest.TestCase):
                 ).compile_release_notes()
 
         # Add a new commit to the git log.
-        updated_mock_git_log = "fabd2ab|FIX: Fix a bug||\n" + MOCK_GIT_LOG
+        updated_mock_git_log = "fabd2ab|§FIX: Fix a bug|§|§@@@\n" + MOCK_GIT_LOG
 
         # Run the compiler on the new git log to update the previous set of release notes.
         with patch(self.GIT_LOG_METHOD_PATH, return_value=updated_mock_git_log):
@@ -347,29 +347,29 @@ class TestReleaseNotesCompiler(unittest.TestCase):
         made on GitHub that isn't subject to the Conventional Commits pre-commit check that we use locally) has no
         commit code.
         """
-        mock_git_log = "\n".join(
+        mock_git_log = "@@@\n".join(
             [
-                "3e7dc54|OPS: Update mkver.conf to correct pattern|| (HEAD -> develop/issue-wq-521-turbine-prevailing-direction, origin/develop/issue-wq-521-turbine-prevailing-direction)",
-                "fabd2ab|OPS: Update conventional commit version in python-ci||",
-                "ef77729|DOC: update readme for new pre-commit ops||",
-                "b043bc8|OPS: update pull request workflow updated||",
-                "27dcef0|DEP: Version bump to 0.1.0||",
-                "358ffd5|OPS: Delete repo issue and pr template||",
-                "44927c6|OPS: Precommit config updated to use conventional commit||",
-                "6589a8e|CHO: Add _mocks file with the mocked classes||",
-                "7cdc980|ENH: Windmap file inputs format now supports space separated headers||",
-                "741bb8d|ENH: Add prevailing_wind_direction to twine file output schema||",
-                "27092a4|ENH: Handle edge case when wind dir not in the data and WD_<whatever> in the time series file. Add tests for checking for None prevailing wind directions||",
-                "6dcdc41|ENH: Mast prevailing wind direction happens when each mast time series file is imported instead of in every turbine||",
-                "b69e7e1|FEA: Add turbine prevailing wind direction to the result as a property of turbine||",
-                "0b20f41|CHO: Clear up the comments and add logging||",
-                "05ec990|CHORE: Remove unused test||",
-                "e506bb4|ENH: The prevailing wind calculation now de-seasons the count of the bins and determines the prevailing wind direction. Slow as *||",
-                "9c125ab|FEAT: Added a utility module which calculates the prevailing wind direction given a wind direction time series||",
-                "3d981b6|Merge pull request #103 from windpioneers/release/0.0.11|| (tag: 0.0.11, origin/main, main)",
-                "9b88bc6|ENH: Added an assert to bring the coverage up||",
-                "17d8de1|ENH: Remove a json turbine data importer, we are not going to be importing a turbine from json 'cos we use pcu for that||",
-                "d242271|DEP: Update pcu version to 0.0.6||",
+                "3e7dc54|§OPS: Update mkver.conf to correct pattern|§|§ (HEAD -> develop/issue-wq-521-turbine-prevailing-direction, origin/develop/issue-wq-521-turbine-prevailing-direction)",
+                "fabd2ab|§OPS: Update conventional commit version in python-ci|§|§",
+                "ef77729|§DOC: update readme for new pre-commit ops|§|§",
+                "b043bc8|§OPS: update pull request workflow updated|§|§",
+                "27dcef0|§DEP: Version bump to 0.1.0|§|§",
+                "358ffd5|§OPS: Delete repo issue and pr template|§|§",
+                "44927c6|§OPS: Precommit config updated to use conventional commit|§|§",
+                "6589a8e|§CHO: Add _mocks file with the mocked classes|§|§",
+                "7cdc980|§ENH: Windmap file inputs format now supports space separated headers|§|§",
+                "741bb8d|§ENH: Add prevailing_wind_direction to twine file output schema|§|§",
+                "27092a4|§ENH: Handle edge case when wind dir not in the data and WD_<whatever> in the time series file. Add tests for checking for None prevailing wind directions|§|§",
+                "6dcdc41|§ENH: Mast prevailing wind direction happens when each mast time series file is imported instead of in every turbine|§|§",
+                "b69e7e1|§FEA: Add turbine prevailing wind direction to the result as a property of turbine|§|§",
+                "0b20f41|§CHO: Clear up the comments and add logging|§|§",
+                "05ec990|§CHORE: Remove unused test|§|§",
+                "e506bb4|§ENH: The prevailing wind calculation now de-seasons the count of the bins and determines the prevailing wind direction. Slow as *|§|§",
+                "9c125ab|§FEAT: Added a utility module which calculates the prevailing wind direction given a wind direction time series|§|§",
+                "3d981b6|§Merge pull request #103 from windpioneers/release/0.0.11|§|§ (tag: 0.0.11, origin/main, main)",
+                "9b88bc6|§ENH: Added an assert to bring the coverage up|§|§",
+                "17d8de1|§ENH: Remove a json turbine data importer, we are not going to be importing a turbine from json 'cos we use pcu for that|§|§",
+                "d242271|§DEP: Update pcu version to 0.0.6|§|§",
             ]
         )
 
@@ -421,14 +421,14 @@ class TestReleaseNotesCompiler(unittest.TestCase):
         commit made on GitHub that isn't subject to the Conventional Commits pre-commit check that we use locally) has
         no commit code.
         """
-        mock_git_log = "\n".join(
+        mock_git_log = "@@@\n".join(
             [
-                "3e7dc54|OPS: Update mkver.conf to correct pattern|| (HEAD -> develop/issue-wq-521-turbine-prevailing)",
-                "fabd2ab|OPS: update pull request workflow updated||",
-                "ef77729|DEP: Version bump to 0.1.0||",
-                "b043bc8|Merge pull request #3 from octue/feature/add-other-conventional-commit-ci-components||",
-                "27dcef0|OPS: Precommit config updated to use conventional commit||",
-                "358ffd5|CHO: Add _mocks file with the mocked classes||",
+                "3e7dc54|§OPS: Update mkver.conf to correct pattern|§|§ (HEAD -> develop/issue-wq-521-turbine-prevailing)",
+                "fabd2ab|§OPS: update pull request workflow updated|§|§",
+                "ef77729|§DEP: Version bump to 0.1.0|§|§",
+                "b043bc8|§Merge pull request #3 from octue/feature/add-other-conventional-commit-ci-components|§|§",
+                "27dcef0|§OPS: Precommit config updated to use conventional commit|§|§",
+                "358ffd5|§CHO: Add _mocks file with the mocked classes|§|§",
             ]
         )
 
@@ -457,10 +457,10 @@ class TestReleaseNotesCompiler(unittest.TestCase):
         """Test that commit headers containing extra colons in addition to the colon splitting the commit code from the
         rest of the commit header are still categorised correctly.
         """
-        mock_git_log = "\n".join(
+        mock_git_log = "@@@\n".join(
             [
-                "3e7dc54|OPS: My message: something||",
-                "fabd2ab|OPS: Update conventional commit version in python-ci||",
+                "3e7dc54|§OPS: My message: something|§|§",
+                "fabd2ab|§OPS: Update conventional commit version in python-ci|§|§",
             ]
         )
 
@@ -483,11 +483,11 @@ class TestReleaseNotesCompiler(unittest.TestCase):
 
     def test_commit_hash_merges_are_ignored(self):
         """Ensure commit messages that are just a merge of a commit ref into another commit ref are ignored."""
-        mock_git_log = "\n".join(
+        mock_git_log = "@@@\n".join(
             [
-                "3e7dc54|OPS: My message: something||",
-                "fabd2ab|Merge ef777290453f11b7519dbd3410b01d34d2e13566 into b043bc85cf558f1706188fafe9676ecd0642ab5a||",
-                "ef77729|OPS: Update conventional commit version in python-ci||",
+                "3e7dc54|§OPS: My message: something|§|§",
+                "fabd2ab|§Merge ef777290453f11b7519dbd3410b01d34d2e13566 into b043bc85cf558f1706188fafe9676ecd0642ab5a|§|§",
+                "ef77729|§OPS: Update conventional commit version in python-ci|§|§",
             ]
         )
 
@@ -533,7 +533,7 @@ class TestReleaseNotesCompiler(unittest.TestCase):
         """Test that a single breaking change is indicated in the release notes at the top and next to the categorised
         commit message.
         """
-        mock_git_log = "fabd2ab|ENH: Make big change|BREAKING CHANGE: blah blah blah|\n" + MOCK_GIT_LOG
+        mock_git_log = "fabd2ab|§ENH: Make big change|§BREAKING CHANGE: blah blah blah|§@@@\n" + MOCK_GIT_LOG
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=mock_git_log):
             release_notes = ReleaseNotesCompiler(stop_point="LAST_RELEASE").compile_release_notes()
@@ -565,9 +565,9 @@ class TestReleaseNotesCompiler(unittest.TestCase):
         commit message.
         """
         mock_git_log = (
-            "fabd2ab|ENH: Make big change|BREAKING-CHANGE: blah blah blah|\n"
-            "fabd2ab|FIX: Make breaking fix|BREAKING CHANGE: blob|\n"
-            "fabd2ab|REF: Change interface|BREAKING-CHANGE: glob|\n"
+            "fabd2ab|§ENH: Make big change|§BREAKING-CHANGE: blah blah blah|§@@@\n"
+            "fabd2ab|§FIX: Make breaking fix|§BREAKING CHANGE: blob|§@@@\n"
+            "fabd2ab|§REF: Change interface|§BREAKING-CHANGE: glob|§@@@\n"
         ) + MOCK_GIT_LOG
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=mock_git_log):
@@ -598,3 +598,30 @@ class TestReleaseNotesCompiler(unittest.TestCase):
                 ]
             ),
         )
+
+    def test_commit_messages_with_multi_line_bodies(self):
+        """Test that commits with multi-line bodies work with the release notes compiler."""
+        mock_git_log = "fabd2ab|§ENH: Blah blah|§This is the body.\n Here is another body line|§@@@\n" + MOCK_GIT_LOG
+
+        with patch(self.GIT_LOG_METHOD_PATH, return_value=mock_git_log):
+            release_notes = ReleaseNotesCompiler(stop_point="LAST_RELEASE").compile_release_notes()
+
+        expected = "\n".join(
+            [
+                "<!--- START AUTOGENERATED NOTES --->",
+                "## Contents",
+                "",
+                "### Enhancements",
+                "- Blah blah",
+                "",
+                "### Refactoring",
+                "- Merge commit message checker modules",
+                "",
+                "### Other",
+                "- Merge pull request #3 from octue/feature/add-other-conventional-commit-ci-components",
+                "",
+                "<!--- END AUTOGENERATED NOTES --->",
+            ]
+        )
+
+        self.assertEqual(release_notes, expected)
