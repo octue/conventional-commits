@@ -208,6 +208,7 @@ Note that these comment lines are invisible in rendered markdown.
 ### Usage
 ```shell
 usage: compile-release-notes [-h] [--pull-request-url PULL_REQUEST_URL] [--api-token API_TOKEN] [--header HEADER] [--list-item-symbol LIST_ITEM_SYMBOL]
+                             [--no-link-to-pull-request]
                              {LAST_RELEASE,LAST_PULL_REQUEST,PULL_REQUEST_START}
 
 positional arguments:
@@ -224,6 +225,9 @@ optional arguments:
   --header HEADER       The header (including MarkDown styling) to put the release notes under. Default is '## Contents'
   --list-item-symbol LIST_ITEM_SYMBOL
                         The MarkDown list item symbol to use for listing commit messages in the release notes. Default is '- '
+  --no-link-to-pull-request
+                        If provided, don't add a link to the given pull request in the release notes.
+
 ```
 
 ### GitHub workflows
