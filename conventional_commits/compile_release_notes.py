@@ -155,12 +155,10 @@ class ReleaseNotesCompiler:
         if response.status_code == 200:
             return response.json()
 
-        try:
-            response.raise_for_status()
-        except requests.HTTPError:
-            logger.warning(
-                f"Pull request could not be found; resorting to using {LAST_RELEASE} stop point.\n", exc_info=True
-            )
+        logger.warning(
+            f"Pull request could not be accessed; resorting to using {LAST_RELEASE} stop point.\n"
+            f"{response.status_code}: {response.text}."
+        )
 
     def _get_git_log(self):
         """Get the one-line decorated git log formatted in the pattern of "hash|§header|§body|§decoration@@@".
