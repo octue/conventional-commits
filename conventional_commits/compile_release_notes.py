@@ -1,4 +1,5 @@
 import argparse
+import logging
 import re
 import subprocess
 
@@ -7,6 +8,9 @@ import requests
 from conventional_commits.check_commit_message import (
     BREAKING_CHANGE_INDICATORS as CONVENTIONAL_COMMIT_BREAKING_CHANGE_INDICATORS,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 LAST_RELEASE = "LAST_RELEASE"
@@ -75,12 +79,14 @@ class ReleaseNotesCompiler:
 
         self.stop_point = stop_point.upper()
 
+        self.current_pull_request = None
+        self.previous_notes = None
+
         if pull_request_url:
             self.current_pull_request = self._get_current_pull_request(pull_request_url, api_token)
-            self.previous_notes = self.current_pull_request["body"]
-        else:
-            self.current_pull_request = None
-            self.previous_notes = None
+
+            if self.current_pull_request:
+                self.previous_notes = self.current_pull_request["body"]
 
         self.header = header
         self.list_item_symbol = list_item_symbol
@@ -92,6 +98,8 @@ class ReleaseNotesCompiler:
                 self.base_branch = self.current_pull_request["base"]["ref"]
             else:
                 self.stop_point = LAST_RELEASE
+
+        logger.info(f"Using {self.stop_point!r} stop point.")
 
     def compile_release_notes(self):
         """Compile the commit messages since the given stop point into a new set of release notes, sorting them into
@@ -142,7 +150,15 @@ class ReleaseNotesCompiler:
         else:
             headers = {"Authorization": f"token {api_token}"}
 
-        return requests.get(pull_request_url, headers=headers).json()
+        response = requests.get(pull_request_url, headers=headers)
+
+        if response.status_code == 200:
+            return response.json()
+
+        logger.warning(
+            f"Pull request could not be accessed; resorting to using {LAST_RELEASE} stop point.\n"
+            f"{response.status_code}: {response.text}."
+        )
 
     def _get_git_log(self):
         """Get the one-line decorated git log formatted in the pattern of "hash|§header|§body|§decoration@@@".

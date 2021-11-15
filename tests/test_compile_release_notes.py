@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from conventional_commits.compile_release_notes import ReleaseNotesCompiler, main
 
@@ -672,6 +672,22 @@ class TestReleaseNotesCompiler(unittest.TestCase):
         )
 
         self.assertEqual(release_notes, expected)
+
+    def test_warning_raised_if_pull_request_is_not_accessible(self):
+        """Test that a warning is logged and the LAST_PULL_REQUEST stop point is used if the given pull request isn't
+        accessible.
+        """
+        with patch(self.GIT_LOG_METHOD_PATH, return_value=MOCK_GIT_LOG):
+            with patch("requests.get", return_value=Mock(status_code=404)):
+                with self.assertLogs() as logging_context:
+                    ReleaseNotesCompiler(
+                        stop_point="LAST_PULL_REQUEST",
+                        pull_request_url="https://api.github.com/repos/octue/conventional-commits/pulls/40",
+                        include_link_to_pull_request=True,
+                    ).compile_release_notes()
+
+                    self.assertEqual(logging_context.records[0].levelname, "WARNING")
+                    self.assertEqual(logging_context.records[1].message, "Using 'LAST_PULL_REQUEST' stop point.")
 
 
 class TestMain(unittest.TestCase):
