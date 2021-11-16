@@ -191,9 +191,8 @@ class ReleaseNotesCompiler:
         for commit in self._get_git_log():
             hash, header, body, decoration = commit.split("|§")
 
-            if "tag" in decoration:
-                if bool(SEMANTIC_VERSION_PATTERN.search(decoration)):
-                    break
+            if "tag" in decoration and bool(SEMANTIC_VERSION_PATTERN.search(decoration)):
+                break
 
             # A colon separating the commit code from the commit header is required - keep commit messages that
             # don't conform to this but put them into an unparsed category. Ignore commits that are merges of one
