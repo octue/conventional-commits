@@ -93,12 +93,6 @@ class ReleaseNotesCompiler:
         self.commit_codes_to_headings_mapping = commit_codes_to_headings_mapping or COMMIT_CODES_TO_HEADINGS_MAPPING
         self.include_link_to_pull_request = include_link_to_pull_request
 
-        if self.stop_point == PULL_REQUEST_START:
-            if self.current_pull_request is not None:
-                self.base_branch = self.current_pull_request["base"]["ref"]
-            else:
-                self.stop_point = LAST_RELEASE
-
         logger.info(f"Using {self.stop_point!r} stop point.")
 
     def compile_release_notes(self):
