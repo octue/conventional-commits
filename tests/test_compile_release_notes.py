@@ -232,10 +232,7 @@ class TestReleaseNotesCompiler(unittest.TestCase):
         mock_git_log = ["fabd2ab|§This is not in the right format|§|§", "27dcef0|§FIX: Fix a bug|§|§"]
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=mock_git_log):
-            release_notes = ReleaseNotesCompiler(
-                stop_point="LAST_RELEASE",
-                include_link_to_pull_request=False,
-            ).compile_release_notes()
+            release_notes = ReleaseNotesCompiler(stop_point="LAST_RELEASE").compile_release_notes()
 
         expected = "\n".join(
             [
@@ -259,10 +256,7 @@ class TestReleaseNotesCompiler(unittest.TestCase):
         mock_git_log = ["27dcef0|§BAM: An unrecognised commit code|§|§", "fabd2ab|§FIX: Fix a bug|§|§"]
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=mock_git_log):
-            release_notes = ReleaseNotesCompiler(
-                stop_point="LAST_RELEASE",
-                include_link_to_pull_request=False,
-            ).compile_release_notes()
+            release_notes = ReleaseNotesCompiler(stop_point="LAST_RELEASE").compile_release_notes()
 
         expected = "\n".join(
             [
@@ -504,9 +498,9 @@ class TestReleaseNotesCompiler(unittest.TestCase):
         commit message.
         """
         mock_git_log = [
-            "fabd2ab|§ENH: Make big change|§BREAKING-CHANGE: blah blah blah|§@@@",
-            "fabd2ab|§FIX: Make breaking fix|§BREAKING CHANGE: blob|§@@@",
-            "fabd2ab|§REF: Change interface|§BREAKING-CHANGE: glob|§@@@",
+            "fabd2ab|§ENH: Make big change|§BREAKING-CHANGE: blah blah blah|§",
+            "fabd2ab|§FIX: Make breaking fix|§BREAKING CHANGE: blob|§",
+            "fabd2ab|§REF: Change interface|§BREAKING-CHANGE: glob|§",
         ] + MOCK_GIT_LOG
 
         with patch(self.GIT_LOG_METHOD_PATH, return_value=mock_git_log):
@@ -603,21 +597,25 @@ class TestReleaseNotesCompiler(unittest.TestCase):
 
         self.assertEqual(release_notes, expected)
 
-    def test_warning_raised_if_pull_request_is_not_accessible(self):
+    def test_last_release_stop_point_used_if_pull_request_is_not_accessible(self):
         """Test that a warning is logged and the LAST_RELEASE stop point is used if the given pull request isn't
         accessible.
         """
         with patch(self.GIT_LOG_METHOD_PATH, return_value=MOCK_GIT_LOG):
             with patch("requests.get", return_value=Mock(status_code=404)):
                 with self.assertLogs() as logging_context:
-                    ReleaseNotesCompiler(
+                    compiler = ReleaseNotesCompiler(
                         stop_point="PULL_REQUEST_START",
                         pull_request_url="https://api.github.com/repos/octue/conventional-commits/pulls/40",
                         include_link_to_pull_request=True,
-                    ).compile_release_notes()
+                    )
 
                     self.assertEqual(logging_context.records[0].levelname, "WARNING")
                     self.assertEqual(logging_context.records[1].message, "Using 'LAST_RELEASE' stop point.")
+
+            compiler.compile_release_notes()
+
+        self.assertEqual(compiler.stop_point, "LAST_RELEASE")
 
     def test_get_pull_request_with_api_token(self):
         """Test that a pull request can be accessed using a GitHub API token."""
