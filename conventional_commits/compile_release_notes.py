@@ -149,7 +149,7 @@ class ReleaseNotesCompiler:
 
         if response.status_code == 200:
             pull_request = response.json()
-            pull_request["commits"] = requests.get(self.current_pull_request["commits_url"], headers=headers).json()
+            pull_request["commits"] = requests.get(pull_request["commits_url"], headers=headers).json()
             return pull_request
 
         logger.warning(
