@@ -21,7 +21,6 @@ BREAKING_CHANGE_INDICATOR = "**BREAKING CHANGE:** "
 
 COMMIT_REF_MERGE_PATTERN = re.compile(r"Merge [0-9a-f]+ into [0-9a-f]+")
 SEMANTIC_VERSION_PATTERN = re.compile(r"tag: (\d+\.\d+\.\d+)")
-PULL_REQUEST_INDICATOR = "Merge pull request #"
 
 COMMIT_CODES_TO_HEADINGS_MAPPING = {
     "FEA": "### New features",
