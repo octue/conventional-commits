@@ -17,9 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-      with:
-        # Set fetch-depth to 0 to fetch all commit history (necessary for compiling pull request description).
-        fetch-depth: 0
     - name: Install release note compiler
       run: pip install git+https://github.com/octue/conventional-commits
     - name: Compile new pull request description

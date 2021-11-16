@@ -65,7 +65,7 @@ class ConventionalCommitMessageChecker:
         self,
         allowed_commit_codes=None,
         maximum_header_length=72,
-        valid_header_ending_pattern=r"[A-Za-z\d]",
+        valid_header_ending_pattern=r"[A-Za-z\d\"\']",
         require_body=False,
         maximum_body_line_length=72,
     ):

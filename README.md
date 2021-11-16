@@ -193,7 +193,6 @@ A command-line tool that compiles release notes and pull request descriptions fr
 stopping at the specified stop point. The stop point can be one of:
 * The first commit of the pull request - `PULL_REQUEST_START`
 * The last semantically-versioned release tagged in the git history relative to the checked-out branch - `LAST_RELEASE`
-* The last merged pull request in the git history relative to the checked-out branch - `LAST_PULL_REQUEST`
 
 If breaking changes are indicated in any of the commit messages' bodies via `BREAKING CHANGE` or `BREAKING-CHANGE`,
 these commits are marked and a warning is added to the top of the release notes.
@@ -209,10 +208,10 @@ Note that these comment lines are invisible in rendered markdown.
 ```shell
 usage: compile-release-notes [-h] [--pull-request-url PULL_REQUEST_URL] [--api-token API_TOKEN] [--header HEADER] [--list-item-symbol LIST_ITEM_SYMBOL]
                              [--no-link-to-pull-request]
-                             {LAST_RELEASE,LAST_PULL_REQUEST,PULL_REQUEST_START}
+                             {LAST_RELEASE,PULL_REQUEST_START}
 
 positional arguments:
-  {LAST_RELEASE,LAST_PULL_REQUEST,PULL_REQUEST_START}
+  {LAST_RELEASE,PULL_REQUEST_START}
                         The point in the git history to stop compiling commits into the release notes.
 
 optional arguments:

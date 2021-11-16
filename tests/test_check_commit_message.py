@@ -44,6 +44,10 @@ class TestCheckCommitMessage(unittest.TestCase):
         with self.assertRaises(ValueError):
             ConventionalCommitMessageChecker().check_commit_message(["FIX: Fix this bug", "Body started too early."])
 
+    def test_valid_header_ending(self):
+        """Test that a commit message with a valid header ending is ok."""
+        ConventionalCommitMessageChecker().check_commit_message(['REV: Reverts "FIX: Fix a bug"'])
+
     def test_with_body_when_body_not_required(self):
         """Test that a commit message with a valid header and body when a body is not required is ok."""
         ConventionalCommitMessageChecker().check_commit_message(["FIX: Fix this bug", "", "This is the body."])
