@@ -22,6 +22,9 @@ BREAKING_CHANGE_INDICATOR = "**BREAKING CHANGE:** "
 COMMIT_REF_MERGE_PATTERN = re.compile(r"Merge [0-9a-f]+ into [0-9a-f]+")
 SEMANTIC_VERSION_PATTERN = re.compile(r"tag: (\d+\.\d+\.\d+)")
 
+OTHER_SECTION_HEADING = "### Other"
+UNCATEGORISED_SECTION_HEADING = "### Uncategorised!"
+
 COMMIT_CODES_TO_HEADINGS_MAPPING = {
     "FEA": "### New features",
     "ENH": "### Enhancements",
@@ -30,12 +33,12 @@ COMMIT_CODES_TO_HEADINGS_MAPPING = {
     "DEP": "### Dependencies",
     "REF": "### Refactoring",
     "TST": "### Testing",
-    "MRG": "### Other",
+    "MRG": OTHER_SECTION_HEADING,
     "REV": "### Reversions",
     "CHO": "### Chores",
     "STY": "### Style",
-    "WIP": "### Other",
-    "DOC": "### Other",
+    "WIP": OTHER_SECTION_HEADING,
+    "DOC": OTHER_SECTION_HEADING,
 }
 
 BREAKING_CHANGE_COUNT_KEY = "BREAKING CHANGE COUNT"
@@ -263,9 +266,9 @@ class ReleaseNotesCompiler:
                 release_notes[self.commit_codes_to_headings_mapping[code]].append(commit_note)
 
             except KeyError:
-                release_notes["### Other"].append(header)
+                release_notes[OTHER_SECTION_HEADING].append(header)
 
-        release_notes["### Uncategorised!"] = unparsed_commits
+        release_notes[UNCATEGORISED_SECTION_HEADING] = unparsed_commits
         return release_notes
 
     def _build_release_notes(self, categorised_commit_messages):
@@ -292,14 +295,15 @@ class ReleaseNotesCompiler:
         release_notes_for_printing += "\n"
 
         for heading, notes in categorised_commit_messages.items():
-            # Save "Other" section for end of release notes.
-            if heading == "### Other" or not notes:
+            # Save "Other" and "Uncategorised" sections for end of release notes.
+            if not notes or heading in {OTHER_SECTION_HEADING, UNCATEGORISED_SECTION_HEADING}:
                 continue
 
             release_notes_for_printing += self._create_release_notes_section(heading=heading, notes=notes)
 
-        if other_notes := categorised_commit_messages.pop("### Other"):
-            release_notes_for_printing += self._create_release_notes_section(heading="### Other", notes=other_notes)
+        for heading in (OTHER_SECTION_HEADING, UNCATEGORISED_SECTION_HEADING):
+            if notes := categorised_commit_messages[heading]:
+                release_notes_for_printing += self._create_release_notes_section(heading=heading, notes=notes)
 
         release_notes_for_printing += AUTO_GENERATION_END_INDICATOR
         return release_notes_for_printing
