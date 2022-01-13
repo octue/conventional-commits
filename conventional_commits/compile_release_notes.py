@@ -22,6 +22,9 @@ BREAKING_CHANGE_INDICATOR = "**BREAKING CHANGE:** "
 COMMIT_REF_MERGE_PATTERN = re.compile(r"Merge [0-9a-f]+ into [0-9a-f]+")
 SEMANTIC_VERSION_PATTERN = re.compile(r"tag: (\d+\.\d+\.\d+)")
 
+OTHER_SECTION_HEADING = "### Other"
+UNCATEGORISED_SECTION_HEADING = "### Uncategorised!"
+
 COMMIT_CODES_TO_HEADINGS_MAPPING = {
     "FEA": "### New features",
     "ENH": "### Enhancements",
@@ -30,12 +33,12 @@ COMMIT_CODES_TO_HEADINGS_MAPPING = {
     "DEP": "### Dependencies",
     "REF": "### Refactoring",
     "TST": "### Testing",
-    "MRG": "### Other",
+    "MRG": OTHER_SECTION_HEADING,
     "REV": "### Reversions",
     "CHO": "### Chores",
-    "WIP": "### Other",
-    "DOC": "### Other",
-    "STY": "### Other",
+    "STY": "### Style",
+    "WIP": OTHER_SECTION_HEADING,
+    "DOC": OTHER_SECTION_HEADING,
 }
 
 BREAKING_CHANGE_COUNT_KEY = "BREAKING CHANGE COUNT"
@@ -263,9 +266,9 @@ class ReleaseNotesCompiler:
                 release_notes[self.commit_codes_to_headings_mapping[code]].append(commit_note)
 
             except KeyError:
-                release_notes["### Other"].append(header)
+                release_notes[OTHER_SECTION_HEADING].append(header)
 
-        release_notes["### Uncategorised!"] = unparsed_commits
+        release_notes[UNCATEGORISED_SECTION_HEADING] = unparsed_commits
         return release_notes
 
     def _build_release_notes(self, categorised_commit_messages):
@@ -292,15 +295,29 @@ class ReleaseNotesCompiler:
         release_notes_for_printing += "\n"
 
         for heading, notes in categorised_commit_messages.items():
-
-            if len(notes) == 0:
+            # Save "Other" and "Uncategorised" sections for end of release notes.
+            if not notes or heading in {OTHER_SECTION_HEADING, UNCATEGORISED_SECTION_HEADING}:
                 continue
 
-            note_lines = "\n".join(self.list_item_symbol + " " + note for note in notes)
-            release_notes_for_printing += f"{heading}\n{note_lines}\n\n"
+            release_notes_for_printing += self._create_release_notes_section(heading=heading, notes=notes)
+
+        for heading in (OTHER_SECTION_HEADING, UNCATEGORISED_SECTION_HEADING):
+            if notes := categorised_commit_messages[heading]:
+                release_notes_for_printing += self._create_release_notes_section(heading=heading, notes=notes)
 
         release_notes_for_printing += AUTO_GENERATION_END_INDICATOR
         return release_notes_for_printing
+
+    def _create_release_notes_section(self, heading, notes):
+        """Create a section of the release notes with the given heading followed by the given notes formatted into a
+        bulleted list.
+
+        :param str heading:
+        :param list(str) notes:
+        :return str:
+        """
+        note_lines = "\n".join(self.list_item_symbol + " " + note for note in notes)
+        return f"{heading}\n{note_lines}\n\n"
 
     def _create_breaking_change_notification(self, breaking_change_count):
         """Create a notification warning of the number of breaking changes.
