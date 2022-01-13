@@ -33,9 +33,9 @@ COMMIT_CODES_TO_HEADINGS_MAPPING = {
     "MRG": "### Other",
     "REV": "### Reversions",
     "CHO": "### Chores",
+    "STY": "### Style",
     "WIP": "### Other",
     "DOC": "### Other",
-    "STY": "### Other",
 }
 
 BREAKING_CHANGE_COUNT_KEY = "BREAKING CHANGE COUNT"
@@ -292,15 +292,28 @@ class ReleaseNotesCompiler:
         release_notes_for_printing += "\n"
 
         for heading, notes in categorised_commit_messages.items():
-
-            if len(notes) == 0:
+            # Save "Other" section for end of release notes.
+            if heading == "### Other" or not notes:
                 continue
 
-            note_lines = "\n".join(self.list_item_symbol + " " + note for note in notes)
-            release_notes_for_printing += f"{heading}\n{note_lines}\n\n"
+            release_notes_for_printing += self._create_release_notes_section(heading=heading, notes=notes)
+
+        if other_notes := categorised_commit_messages.pop("### Other"):
+            release_notes_for_printing += self._create_release_notes_section(heading="### Other", notes=other_notes)
 
         release_notes_for_printing += AUTO_GENERATION_END_INDICATOR
         return release_notes_for_printing
+
+    def _create_release_notes_section(self, heading, notes):
+        """Create a section of the release notes with the given heading followed by the given notes formatted into a
+        bulleted list.
+
+        :param str heading:
+        :param list(str) notes:
+        :return str:
+        """
+        note_lines = "\n".join(self.list_item_symbol + " " + note for note in notes)
+        return f"{heading}\n{note_lines}\n\n"
 
     def _create_breaking_change_notification(self, breaking_change_count):
         """Create a notification warning of the number of breaking changes.
