@@ -41,9 +41,9 @@ class TestCheckCommitMessage(unittest.TestCase):
 
     def test_valid_header_endings(self):
         """Test that a commit message with a valid header ending is ok."""
-        for ending in ("'", " ", "blah", "32"):
+        for ending in ("'", " ", '"' "blah", "32", ")", "`"):
             with self.subTest(ending=ending):
-                ConventionalCommitMessageChecker().check_commit_message(['REV: Reverts "FIX: Fix a bug"'])
+                ConventionalCommitMessageChecker().check_commit_message(["REV: Reverts FIX: Fix a bug" + ending])
 
     def test_non_blank_header_separator_line_raises_error(self):
         """Test that a commit message with a non-blank header separator line results in an error."""
