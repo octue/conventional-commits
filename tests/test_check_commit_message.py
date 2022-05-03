@@ -137,6 +137,14 @@ class TestCheckCommitMessage(unittest.TestCase):
         ConventionalCommitMessageChecker().check_commit_message(["FIX: Fix this bug", "", "BREAKING CHANGE: blah"])
         ConventionalCommitMessageChecker().check_commit_message(["FIX: Fix this bug", "", "BREAKING-CHANGE: blah"])
 
+    def test_breaking_change_section_can_contain_the_words_breaking_change_after_breaking_change_indicators(self):
+        """Test that the breaking change section can contain the words 'breaking change' after the breaking change
+        indicator.
+        """
+        ConventionalCommitMessageChecker()._validate_breaking_change_descriptions(
+            "BREAKING-CHANGE: Uncategorised commits contain breaking changes including the use of..."
+        )
+
 
 class TestMain(unittest.TestCase):
     def test_with_invalid_commit_message(self):

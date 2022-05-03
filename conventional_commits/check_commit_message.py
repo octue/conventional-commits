@@ -182,18 +182,13 @@ class ConventionalCommitMessageChecker:
         :raise ValueError: if the breaking change indicator is invalid
         :return None:
         """
-        breaking_change_error = ValueError(
-            f"Breaking changes must be denoted by one of {BREAKING_CHANGE_INDICATORS!r} in uppercase followed by ': ' "
-            f"and a description e.g. 'BREAKING CHANGE: Change MyPublicClass interface'; received "
-            f"{line!r}."
-        )
-
-        if any(indicator.lower() in line for indicator in BREAKING_CHANGE_INDICATORS):
-            raise breaking_change_error
-
-        if any(indicator in line for indicator in BREAKING_CHANGE_INDICATORS):
+        if any(line.strip().lower().startswith(indicator.lower()) for indicator in BREAKING_CHANGE_INDICATORS):
             if not re.match(BREAKING_CHANGE_PATTERN, line):
-                raise breaking_change_error
+                raise ValueError(
+                    f"Breaking changes must be denoted by one of {BREAKING_CHANGE_INDICATORS!r} in uppercase followed "
+                    f"by ': ' and a description e.g. 'BREAKING CHANGE: Change MyPublicClass interface'; received "
+                    f"{line!r}."
+                )
 
 
 def main(argv=None):
