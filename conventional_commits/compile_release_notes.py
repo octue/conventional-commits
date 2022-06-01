@@ -304,7 +304,7 @@ class ReleaseNotesCompiler:
         breaking_change_count = categorised_commit_messages.pop(BREAKING_CHANGE_COUNT_KEY)
 
         if breaking_change_count > 0:
-            release_notes_for_printing += self._create_breaking_change_update_section(
+            release_notes_for_printing += self._create_breaking_change_upgrade_section(
                 breaking_change_count=breaking_change_count,
                 upgrade_instructions=upgrade_instructions,
             )
@@ -336,8 +336,8 @@ class ReleaseNotesCompiler:
         note_lines = "\n".join(self.list_item_symbol + " " + note for note in notes)
         return f"{heading}\n{note_lines}\n\n"
 
-    def _create_breaking_change_update_section(self, breaking_change_count, upgrade_instructions):
-        """Create an update section explaining how to update to deal with breaking changes.
+    def _create_breaking_change_upgrade_section(self, breaking_change_count, upgrade_instructions):
+        """Create an upgrade section explaining how to update to deal with breaking changes.
 
         :param int breaking_change_count: the number of breaking changes
         :param list(str) upgrade_instructions: an upgrade instruction for each breaking change (can be any amount of markdown)
