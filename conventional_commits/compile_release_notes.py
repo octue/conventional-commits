@@ -299,7 +299,29 @@ class ReleaseNotesCompiler:
         :return str:
         """
         breaking_change_count = categorised_commit_messages.pop(BREAKING_CHANGE_COUNT_KEY)
+        upgrade_instructions_section = ""
 
+        contents_section = self._create_contents_section(categorised_commit_messages, breaking_change_count)
+
+        if breaking_change_count > 0:
+            upgrade_instructions_section = self._create_breaking_change_upgrade_section(upgrade_instructions)
+
+        return "".join(
+            [
+                f"{AUTO_GENERATION_START_INDICATOR}\n",
+                contents_section,
+                upgrade_instructions_section,
+                AUTO_GENERATION_END_INDICATOR,
+            ]
+        )
+
+    def _create_contents_section(self, categorised_commit_messages, breaking_change_count):
+        """Create the contents section of the release notes.
+
+        :param dict categorised_commit_messages:
+        :param int breaking_change_count: the number of breaking changes
+        :return str:
+        """
         if self.current_pull_request is not None and self.include_link_to_pull_request:
             link_to_pull_request = (
                 f" ([#{self.current_pull_request['number']}]({self.current_pull_request['html_url']}))"
@@ -307,29 +329,23 @@ class ReleaseNotesCompiler:
         else:
             link_to_pull_request = ""
 
-        release_notes_for_printing = f"{AUTO_GENERATION_START_INDICATOR}\n{self.header}{link_to_pull_request}\n\n"
+        contents_section = f"{self.header}{link_to_pull_request}\n\n"
 
         if breaking_change_count:
-            release_notes_for_printing += self._create_breaking_change_warning(breaking_change_count)
+            contents_section += self._create_breaking_change_warning(breaking_change_count)
 
         for heading, notes in categorised_commit_messages.items():
             # Save "Other" and "Uncategorised" sections for end of release notes.
             if not notes or heading in {OTHER_SECTION_HEADING, UNCATEGORISED_SECTION_HEADING}:
                 continue
 
-            release_notes_for_printing += self._create_release_notes_section(heading=heading, notes=notes)
+            contents_section += self._create_release_notes_section(heading=heading, notes=notes)
 
         for heading in (OTHER_SECTION_HEADING, UNCATEGORISED_SECTION_HEADING):
             if notes := categorised_commit_messages[heading]:
-                release_notes_for_printing += self._create_release_notes_section(heading=heading, notes=notes)
+                contents_section += self._create_release_notes_section(heading=heading, notes=notes)
 
-        if breaking_change_count > 0:
-            release_notes_for_printing += self._create_breaking_change_upgrade_section(
-                upgrade_instructions=upgrade_instructions,
-            )
-
-        release_notes_for_printing += AUTO_GENERATION_END_INDICATOR
-        return release_notes_for_printing
+        return contents_section
 
     def _create_release_notes_section(self, heading, notes):
         """Create a section of the release notes with the given heading followed by the given notes formatted into a
