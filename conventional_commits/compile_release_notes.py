@@ -268,9 +268,13 @@ class ReleaseNotesCompiler:
                     commit_note = BREAKING_CHANGE_INDICATOR + header
                     categorised_commits[BREAKING_CHANGE_COUNT_KEY] += 1
 
-                    # Remove the breaking change indicator from the body and put the body under the commit header.
+                    # Remove the breaking change indicator from the body and put the body in a collapsible section
+                    # under the commit header.
                     breaking_change_upgrade_instructions.append(
-                        f"**{header}**\n" + ":".join(body.split(":")[1:]).strip()
+                        "<details>\n"
+                        f"    <summary>💥 <b>{header}</b></summary>\n"
+                        f"    {':'.join(body.split(':')[1:]).strip()}\n"
+                        "</details>"
                     )
 
                 else:
