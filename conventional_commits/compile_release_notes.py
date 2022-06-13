@@ -339,24 +339,13 @@ class ReleaseNotesCompiler:
             if not notes or heading in {OTHER_SECTION_HEADING, UNCATEGORISED_SECTION_HEADING}:
                 continue
 
-            contents_section += self._create_release_notes_section(heading=heading, notes=notes)
+            contents_section += self._create_contents_subsection(heading=heading, notes=notes)
 
         for heading in (OTHER_SECTION_HEADING, UNCATEGORISED_SECTION_HEADING):
             if notes := categorised_commit_messages[heading]:
-                contents_section += self._create_release_notes_section(heading=heading, notes=notes)
+                contents_section += self._create_contents_subsection(heading=heading, notes=notes)
 
         return contents_section
-
-    def _create_release_notes_section(self, heading, notes):
-        """Create a section of the release notes with the given heading followed by the given notes formatted into a
-        bulleted list.
-
-        :param str heading:
-        :param list(str) notes:
-        :return str:
-        """
-        note_lines = "\n".join(self.list_item_symbol + " " + note for note in notes)
-        return f"{heading}\n{note_lines}\n\n"
 
     def _create_breaking_change_warning(self, breaking_change_count):
         """Create a breaking change warning string.
@@ -368,6 +357,17 @@ class ReleaseNotesCompiler:
             return f"**IMPORTANT:** There is {breaking_change_count} breaking change.\n\n"
 
         return f"**IMPORTANT:** There are {breaking_change_count} breaking changes.\n\n"
+
+    def _create_contents_subsection(self, heading, notes):
+        """Create a section of the release notes with the given heading followed by th5e given notes formatted into a
+        bulleted list.
+
+        :param str heading:
+        :param list(str) notes:
+        :return str:
+        """
+        note_lines = "\n".join(self.list_item_symbol + " " + note for note in notes)
+        return f"{heading}\n{note_lines}\n\n"
 
     def _create_breaking_change_upgrade_section(self, upgrade_instructions):
         """Create an upgrade section explaining how to update to deal with breaking changes.
