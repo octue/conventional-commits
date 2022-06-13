@@ -298,6 +298,8 @@ class ReleaseNotesCompiler:
         :param list(str) upgrade_instructions: an upgrade instruction for each breaking change
         :return str:
         """
+        breaking_change_count = categorised_commit_messages.pop(BREAKING_CHANGE_COUNT_KEY)
+
         if self.current_pull_request is not None and self.include_link_to_pull_request:
             link_to_pull_request = (
                 f" ([#{self.current_pull_request['number']}]({self.current_pull_request['html_url']}))"
@@ -305,17 +307,7 @@ class ReleaseNotesCompiler:
         else:
             link_to_pull_request = ""
 
-        release_notes_for_printing = f"{AUTO_GENERATION_START_INDICATOR}\n"
-
-        breaking_change_count = categorised_commit_messages.pop(BREAKING_CHANGE_COUNT_KEY)
-
-        if breaking_change_count > 0:
-            release_notes_for_printing += self._create_breaking_change_upgrade_section(
-                breaking_change_count=breaking_change_count,
-                upgrade_instructions=upgrade_instructions,
-            )
-
-        release_notes_for_printing += f"{self.header}{link_to_pull_request}\n\n"
+        release_notes_for_printing = f"{AUTO_GENERATION_START_INDICATOR}\n{self.header}{link_to_pull_request}\n\n"
 
         for heading, notes in categorised_commit_messages.items():
             # Save "Other" and "Uncategorised" sections for end of release notes.
@@ -327,6 +319,12 @@ class ReleaseNotesCompiler:
         for heading in (OTHER_SECTION_HEADING, UNCATEGORISED_SECTION_HEADING):
             if notes := categorised_commit_messages[heading]:
                 release_notes_for_printing += self._create_release_notes_section(heading=heading, notes=notes)
+
+        if breaking_change_count > 0:
+            release_notes_for_printing += self._create_breaking_change_upgrade_section(
+                breaking_change_count=breaking_change_count,
+                upgrade_instructions=upgrade_instructions,
+            )
 
         release_notes_for_printing += AUTO_GENERATION_END_INDICATOR
         return release_notes_for_printing
