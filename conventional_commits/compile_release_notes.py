@@ -270,10 +270,12 @@ class ReleaseNotesCompiler:
 
                     # Remove the breaking change indicator from the body and put the body in a collapsible section
                     # under the commit header.
+                    upgrade_instruction = ":".join(body.split(":")[1:]).strip()
+
                     breaking_change_upgrade_instructions.append(
                         "<details>\n"
-                        f"    <summary>💥 <b>{header}</b></summary>\n"
-                        f"    {':'.join(body.split(':')[1:]).strip()}\n"
+                        f"<summary>💥 <b>{header}</b></summary>\n"
+                        f"\n{upgrade_instruction}\n"
                         "</details>"
                     )
 
