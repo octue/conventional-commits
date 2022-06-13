@@ -310,6 +310,7 @@ class ReleaseNotesCompiler:
             [
                 f"{AUTO_GENERATION_START_INDICATOR}\n",
                 contents_section,
+                "---\n",
                 upgrade_instructions_section,
                 AUTO_GENERATION_END_INDICATOR,
             ]
