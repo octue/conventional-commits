@@ -309,6 +309,9 @@ class ReleaseNotesCompiler:
 
         release_notes_for_printing = f"{AUTO_GENERATION_START_INDICATOR}\n{self.header}{link_to_pull_request}\n\n"
 
+        if breaking_change_count:
+            release_notes_for_printing += self._create_breaking_change_warning(breaking_change_count)
+
         for heading, notes in categorised_commit_messages.items():
             # Save "Other" and "Uncategorised" sections for end of release notes.
             if not notes or heading in {OTHER_SECTION_HEADING, UNCATEGORISED_SECTION_HEADING}:
@@ -322,7 +325,6 @@ class ReleaseNotesCompiler:
 
         if breaking_change_count > 0:
             release_notes_for_printing += self._create_breaking_change_upgrade_section(
-                breaking_change_count=breaking_change_count,
                 upgrade_instructions=upgrade_instructions,
             )
 
@@ -340,23 +342,27 @@ class ReleaseNotesCompiler:
         note_lines = "\n".join(self.list_item_symbol + " " + note for note in notes)
         return f"{heading}\n{note_lines}\n\n"
 
-    def _create_breaking_change_upgrade_section(self, breaking_change_count, upgrade_instructions):
+    def _create_breaking_change_warning(self, breaking_change_count):
+        """Create a breaking change warning string.
+
+        :param int breaking_change_count: The number of breaking changes
+        :return str:
+        """
+        if breaking_change_count == 1:
+            return f"**IMPORTANT:** There is {breaking_change_count} breaking change.\n\n"
+
+        return f"**IMPORTANT:** There are {breaking_change_count} breaking changes.\n\n"
+
+    def _create_breaking_change_upgrade_section(self, upgrade_instructions):
         """Create an upgrade section explaining how to update to deal with breaking changes.
 
-        :param int breaking_change_count: the number of breaking changes
         :param list(str) upgrade_instructions: an upgrade instruction for each breaking change (can be any amount of markdown)
         :return str: breaking change upgrade_section
         """
-        if breaking_change_count == 1:
-            notification = f"**IMPORTANT:** There is {breaking_change_count} breaking change.\n"
-        else:
-            notification = f"**IMPORTANT:** There are {breaking_change_count} breaking changes.\n"
-
         return (
             "\n".join(
                 [
                     UPGRADE_INSTRUCTIONS_HEADER,
-                    notification,
                     "\n\n".join(upgrade_instructions),
                 ]
             )
