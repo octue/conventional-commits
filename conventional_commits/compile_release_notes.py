@@ -18,7 +18,7 @@ PULL_REQUEST_START = "PULL_REQUEST_START"
 STOP_POINTS = (LAST_RELEASE, PULL_REQUEST_START)
 
 BREAKING_CHANGE_INDICATOR = "💥 **BREAKING CHANGE:** "
-UPGRADE_INSTRUCTIONS_HEADER = "## Upgrade instructions"
+UPGRADE_INSTRUCTIONS_HEADER = "# Upgrade instructions"
 
 COMMIT_REF_MERGE_PATTERN = re.compile(r"Merge [0-9a-f]+ into [0-9a-f]+")
 SEMANTIC_VERSION_PATTERN = re.compile(r"tag: (\d+\.\d+\.\d+)")
@@ -71,7 +71,7 @@ class ReleaseNotesCompiler:
         stop_point,
         pull_request_url=None,
         api_token=None,
-        header="## Contents",
+        header="# Contents",
         list_item_symbol="-",
         commit_codes_to_headings_mapping=None,
         include_link_to_pull_request=True,
@@ -304,13 +304,12 @@ class ReleaseNotesCompiler:
         contents_section = self._create_contents_section(categorised_commit_messages, breaking_change_count)
 
         if breaking_change_count > 0:
-            upgrade_instructions_section = self._create_breaking_change_upgrade_section(upgrade_instructions)
+            upgrade_instructions_section = "---\n" + self._create_breaking_change_upgrade_section(upgrade_instructions)
 
         return "".join(
             [
                 f"{AUTO_GENERATION_START_INDICATOR}\n",
                 contents_section,
-                "---\n",
                 upgrade_instructions_section,
                 AUTO_GENERATION_END_INDICATOR,
             ]
