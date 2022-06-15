@@ -157,7 +157,7 @@ class ReleaseNotesCompiler:
 
         if response.status_code == 200:
             pull_request = response.json()
-            pull_request["commits"] = requests.get(pull_request["commits_url"], headers=headers).json()
+            pull_request["commits"] = self._get_pull_request_commits(pull_request, headers)
             return pull_request
 
         logger.warning(
@@ -167,6 +167,24 @@ class ReleaseNotesCompiler:
 
         self.stop_point = LAST_RELEASE
         return None
+
+    def _get_pull_request_commits(self, pull_request, headers):
+        """Get all the commits belonging to the pull request by requesting every page from the GitHub API.
+
+        :param dict pull_request:
+        :param dict headers:
+        :return list:
+        """
+        commits = []
+
+        response = requests.get(pull_request["commits_url"] + "?per_page=100", headers=headers)
+        commits.extend(response.json())
+
+        while "next" in response.links:
+            response = requests.get(response.links["next"]["url"])
+            commits.extend(response.json())
+
+        return commits
 
     def _get_git_log(self):
         """Get the one-line decorated git log formatted in the pattern of "hash|§header|§body|§decoration@@@".
@@ -399,7 +417,9 @@ def main(argv=None):
         "--pull-request-url",
         default=None,
         type=str,
-        help="Provide this if you want to update a pull request's description with the generated release notes. Must be provided alongside --api-token if the repository is private.",
+        help="Provide the API URL of a pull request (e.g. https://api.github.com/repos/octue/conventional-commits/pulls/1) "
+        "if you want to update a pull request's description with the generated release notes. It must be provided "
+        "alongside --api-token if the repository is private.",
     )
 
     parser.add_argument(
