@@ -664,7 +664,9 @@ class TestReleaseNotesCompiler(unittest.TestCase):
 
         with patch(
             "requests.get",
-            return_value=Mock(status_code=200, json=lambda: {"body": "blah", "commits_url": "https://url/to/commits"}),
+            return_value=Mock(
+                status_code=200, json=lambda: {"body": "blah", "commits_url": "https://url/to/commits"}, links={}
+            ),
         ) as mock_get:
             compiler = ReleaseNotesCompiler(
                 stop_point="PULL_REQUEST_START",
@@ -677,7 +679,7 @@ class TestReleaseNotesCompiler(unittest.TestCase):
         self.assertEqual(mock_get.call_args_list[0].kwargs, {"headers": {"Authorization": "token blah"}})
 
         # Check the commits URL has been requested and the returned JSON added to the pull request JSON.
-        self.assertEqual(mock_get.call_args_list[1].args, ("https://url/to/commits",))
+        self.assertEqual(mock_get.call_args_list[1].args, ("https://url/to/commits?per_page=100",))
         self.assertIn("commits", compiler.current_pull_request)
 
 
