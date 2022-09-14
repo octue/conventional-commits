@@ -67,15 +67,15 @@ class TestCheckCommitMessage(unittest.TestCase):
 
     def test_body_lines_over_maximum_length_raises_error(self):
         """Test that a commit message with a body that has a line that is too long results in an error."""
-        with self.assertRaises(ValueError):
-            ConventionalCommitMessageChecker(require_body=True).check_commit_message(
-                ["FIX: Fix this bug", "", f"{'a' * 80}"]
-            )
+        commit_message_checker = ConventionalCommitMessageChecker(require_body=True, maximum_body_line_length=72)
 
-        with self.assertRaises(ValueError):
-            ConventionalCommitMessageChecker(require_body=True).check_commit_message(
-                ["FIX: Fix this bug", "", "an okay line", f"{'a' * 80}"]
-            )
+        for commits in (
+            ["FIX: Fix this bug", "", f"{'a' * 80}"],
+            ["FIX: Fix this bug", "", "an okay line", f"{'a' * 80}"],
+        ):
+            with self.subTest(commits=commits):
+                with self.assertRaises(ValueError):
+                    commit_message_checker.check_commit_message(commits)
 
     def test_comments_lines_are_ignored(self):
         """Test that comment lines in the commit message are ignored."""
