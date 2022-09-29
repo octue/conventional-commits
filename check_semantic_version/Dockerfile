@@ -1,6 +1,6 @@
-FROM python:3.8.12-slim
+FROM python:3.10.7-slim
 
-RUN apt-get update && apt-get install -y curl git
+RUN apt-get update && apt-get install -y --no-install-recommends curl git && rm -rf /var/lib/apt/lists/*
 
 RUN curl -L https://github.com/idc101/git-mkver/releases/download/v1.2.1/git-mkver-linux-amd64-1.2.1.tar.gz \
     | tar xvz \
