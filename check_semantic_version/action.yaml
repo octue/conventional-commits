@@ -1,5 +1,6 @@
 name: 'Check semantic version'
-description: 'Check that the current version of your package is consistent with the semantic version according to `git-mkver` via your conventional commits.'
+description: 'Check that the version of your package is the same as the expected semantic version calculated from the conventional commits on your current branch.'
+author: 'cortadocodes'
 inputs:
   version_source_type:
     description: 'The name of the type of file containing the current version number (one of "setup.py", "pyproject.toml", or "package.json")'
