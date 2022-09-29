@@ -2,7 +2,10 @@
 
 name: python-ci
 
-on: [push]
+on:
+  push:
+    branches-ignore:
+      - main
 
 jobs:
 
