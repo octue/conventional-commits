@@ -22,13 +22,13 @@ jobs:
           ref: ${{ github.event.inputs.ref }}
 
       - name: Log in to DockerHub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push
-        uses: docker/build-push-action@v2.10.0
+        uses: docker/build-push-action@v3.1.1
         with:
           context: ./check_semantic_version
           push: true
