@@ -15,7 +15,7 @@ jobs:
           # Set fetch-depth to 0 to fetch all tags (necessary for git-mkver to determine the correct semantic version).
           fetch-depth: 0
       - uses: actions/setup-python@v4
-      - uses: octue/conventional-commits/check-semantic-version@feature/add-github-actions
+      - uses: octue/conventional-commits/check-semantic-version@main
         with:
           version_source_type: setup.py
 
