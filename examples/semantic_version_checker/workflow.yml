@@ -11,13 +11,7 @@ jobs:
         with:
           # Set fetch-depth to 0 to fetch all tags (necessary for git-mkver to determine the correct semantic version).
           fetch-depth: 0
-      - uses: actions/setup-python@v2
-      - name: Install git-mkver
-        run: |
-          curl -L https://github.com/idc101/git-mkver/releases/download/v1.2.1/git-mkver-linux-amd64-1.2.1.tar.gz \
-          | tar xvz \
-          && sudo mv git-mkver /usr/local/bin
-      - name: Install semantic version checker
-        run: pip install git+https://github.com/octue/conventional-commits
-      - name: Check version
-        run: check-semantic-version setup.py
+      - uses: actions/setup-python@v4
+      - uses: octue/conventional-commits/check-semantic-version@feature/add-github-actions
+        with:
+          version_source_type: setup.py

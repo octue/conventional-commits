@@ -182,8 +182,15 @@ optional arguments:
 ```
 
 ### GitHub workflows
-The checker can easily be incorporated into a GitHub workflow as a job. See
-[here](examples/semantic_version_checker/workflow.yml) for a canonical example.
+The checker can easily used as a step in a GitHub workflow. You can add it like this:
+
+```yaml
+uses: octue/conventional-commits/check-semantic-version@0.7.0
+with:
+  version_source_type: setup.py
+```
+
+See [here](examples/semantic_version_checker/workflow.yml) for an example in a workflow.
 
 
 ## Release notes compiler
