@@ -71,6 +71,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3.1.1
         with:
-          context: ./check_semantic_version
+          context: ./check-semantic-version
           push: true
           tags: octue/check-semantic-version:${{ env.PACKAGE_VERSION }},octue/check-semantic-version:latest
