@@ -8,8 +8,8 @@ RUN curl -L https://github.com/idc101/git-mkver/releases/download/v1.2.1/git-mkv
 
 RUN pip3 install git+https://github.com/octue/conventional-commits
 
-COPY entrypoint.sh entrypoint.sh
+COPY entrypoint.sh /entrypoint.sh
 
 RUN chmod +x entrypoint.sh
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
