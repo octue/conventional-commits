@@ -4,10 +4,10 @@ inputs:
   version_source_type:
     description: 'The name of the type of file containing the current version number (one of "setup.py", "pyproject.toml", or "package.json")'
     required: true
-    default: 'setup.py'
   version_source_path:
-    description: 'The path to the version source file if it's not in the repository root.'
+    description: 'The path to the version source file if it is not in the repository root.'
     required: false
+    default: ''
 runs:
    using: 'docker'
    image: 'Dockerfile'
