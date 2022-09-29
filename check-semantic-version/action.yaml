@@ -11,7 +11,7 @@ inputs:
     default: ''
 runs:
    using: 'docker'
-   image: 'docker://octue/check-semantic-version:0.7.0'
+   image: 'docker://octue/check-semantic-version:0.8.0'
    args:
      - ${{ inputs.version_source_type }}
      - ${{ inputs.version_source_path }}

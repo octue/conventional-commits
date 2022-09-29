@@ -6,7 +6,7 @@ RUN curl -L https://github.com/idc101/git-mkver/releases/download/v1.2.1/git-mkv
     | tar xvz \
     && mv git-mkver /usr/local/bin
 
-RUN pip3 install git+https://github.com/octue/conventional-commits.git@0.7.0
+RUN pip3 install git+https://github.com/octue/conventional-commits.git@0.8.0
 
 COPY entrypoint.sh /entrypoint.sh
 

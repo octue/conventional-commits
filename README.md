@@ -185,7 +185,7 @@ optional arguments:
 The checker can easily used as a step in a GitHub workflow. You can add it like this:
 
 ```yaml
-uses: octue/conventional-commits/check-semantic-version@0.7.0
+uses: octue/conventional-commits/check-semantic-version@0.8.0
 with:
   version_source_type: setup.py
 ```
