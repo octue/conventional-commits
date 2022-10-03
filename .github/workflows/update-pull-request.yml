@@ -18,12 +18,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - uses: octue/conventional-commits/generate-release-notes@feature/add-pr-description-github-action
+    - uses: octue/generate-pull-request-description@1.0.0.beta-0
       with:
         pull_request_url: ${{ github.event.pull_request.url }}
         api_token: ${{ secrets.GITHUB_TOKEN }}
     - name: Update pull request body
       uses: riskledger/update-pr-description@v2
       with:
-        body: ${{ env.RELEASE_NOTES }}
+        body: ${{ env.PULL_REQUEST_DESCRIPTION }}
         token: ${{ secrets.GITHUB_TOKEN }}
