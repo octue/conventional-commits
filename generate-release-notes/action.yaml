@@ -1,0 +1,35 @@
+name: 'Generate release notes'
+description: "Generate release notes from the Conventional Commits on a pull request branch. You can use this action to automatically update a pull request's description as commits are pushed."
+author: 'cortadocodes'
+inputs:
+  pull_request_url:
+    description: 'The GitHub API URL for the pull request to generate the release notes from. This can be provided in a GitHub workflow as ${{ github.event.pull_request.url }}'
+    required: true
+  api_token:
+    description: 'A GitHub API token. This must be provided if running the action on a pull request from a private repository. It can be provided in a GitHub workflow as ${{ secrets.GITHUB_TOKEN }}'
+    required: false
+    default: ''
+  header:
+    description: 'The header (including MarkDown styling) to put the release notes under.'
+    required: false
+    default: '# Contents'
+  list_item_symbol:
+    description: 'The MarkDown list item symbol to use for listing commit messages in the release notes.'
+    required: false
+    default: '-'
+  no_link_to_pull_request:
+    description: "If provided, don't add a link to the pull request in the release notes."
+    required: false
+    default: ''
+outputs:
+  release_notes:
+    description: 'The release notes generated from the Conventional Commits on the pull request branch.'
+runs:
+   using: 'docker'
+   image: 'docker://octue/check-semantic-version:0.8.0'
+   args:
+     - ${{ inputs.pull_request_url }}
+     - ${{ inputs.api_token }}
+     - ${{ inputs.header }}
+     - ${{ inputs.list_item_symbol }}
+     - ${{ inputs.no_link_to_pull_request }}
