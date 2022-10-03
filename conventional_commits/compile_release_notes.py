@@ -141,14 +141,14 @@ class ReleaseNotesCompiler:
             )
         ).strip('"\n')
 
-    def _get_current_pull_request(self, pull_request_url, api_token):
+    def _get_current_pull_request(self, pull_request_url, api_token=None):
         """Get the current pull request from the GitHub API.
 
         :param str pull_request_url: the GitHub API URL for the pull request
         :param str|None api_token: GitHub API token
         :return dict|None:
         """
-        if api_token is None:
+        if api_token:
             headers = {}
         else:
             headers = {"Authorization": f"token {api_token}"}
