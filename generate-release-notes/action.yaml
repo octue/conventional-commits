@@ -26,7 +26,7 @@ outputs:
     description: 'The release notes generated from the Conventional Commits on the pull request branch.'
 runs:
    using: 'docker'
-   image: 'docker://octue/check-semantic-version:0.8.0'
+   image: 'Dockerfile'
    args:
      - ${{ inputs.pull_request_url }}
      - ${{ inputs.api_token }}
