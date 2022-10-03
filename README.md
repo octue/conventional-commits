@@ -185,9 +185,13 @@ optional arguments:
 The checker be can easily used as a step in a GitHub workflow. You can add it like this:
 
 ```yaml
-uses: octue/conventional-commits/check-semantic-version@0.8.0
-with:
-  version_source_type: setup.py
+- uses: actions/checkout@v3
+  with:
+    # Set fetch-depth to 0 to fetch all tags (necessary for git-mkver to determine the correct semantic version).
+    fetch-depth: 0
+- uses: octue/conventional-commits/check-semantic-version@0.8.0
+  with:
+    version_source_type: setup.py
 ```
 
 See [here](examples/semantic_version_checker/workflow.yml) for an example in a workflow.
