@@ -10,7 +10,7 @@ jobs:
   description:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Install release note compiler
       run: pip install git+https://github.com/octue/conventional-commits
     - name: Compile new pull request description

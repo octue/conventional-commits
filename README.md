@@ -182,7 +182,7 @@ optional arguments:
 ```
 
 ### GitHub workflows
-The checker can easily used as a step in a GitHub workflow. You can add it like this:
+The checker be can easily used as a step in a GitHub workflow. You can add it like this:
 
 ```yaml
 uses: octue/conventional-commits/check-semantic-version@0.8.0
