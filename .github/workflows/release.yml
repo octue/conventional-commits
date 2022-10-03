@@ -31,14 +31,14 @@ jobs:
         uses: codecov/codecov-action@v1
         with:
           file: coverage.xml
-          fail_ci_if_error: true
+          fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
 
   release:
     runs-on: ubuntu-latest
     needs: tests
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Get package version
       run: echo "PACKAGE_VERSION=$(python setup.py --version)" >> $GITHUB_ENV
     - name: Create Release
@@ -71,6 +71,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3.1.1
         with:
-          context: ./check_semantic_version
+          context: ./check-semantic-version
           push: true
           tags: octue/check-semantic-version:${{ env.PACKAGE_VERSION }},octue/check-semantic-version:latest

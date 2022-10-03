@@ -7,11 +7,10 @@ jobs:
   check-semantic-version:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           # Set fetch-depth to 0 to fetch all tags (necessary for git-mkver to determine the correct semantic version).
           fetch-depth: 0
-      - uses: actions/setup-python@v4
-      - uses: octue/conventional-commits/check-semantic-version@feature/add-github-actions
+      - uses: octue/conventional-commits/check-semantic-version@0.7.1
         with:
           version_source_type: setup.py
