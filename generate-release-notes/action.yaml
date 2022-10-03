@@ -1,5 +1,5 @@
 name: 'Generate release notes'
-description: "Generate release notes from the Conventional Commits on a pull request branch. You can use this action to automatically update a pull request's description as commits are pushed."
+description: "Generate release notes from the Conventional Commits on a pull request branch. You can use this action in conjunction with `riskledger/update-pr-description@v2` to automatically update a pull request's description as commits are pushed."
 author: 'cortadocodes'
 inputs:
   pull_request_url:
