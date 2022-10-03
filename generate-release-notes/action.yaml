@@ -3,10 +3,10 @@ description: "Generate release notes from the Conventional Commits on a pull req
 author: 'cortadocodes'
 inputs:
   pull_request_url:
-    description: 'The GitHub API URL for the pull request to generate the release notes from. This can be provided in a GitHub workflow as ${{ github.event.pull_request.url }}'
+    description: 'The GitHub API URL for the pull request to generate the release notes from.'
     required: true
   api_token:
-    description: 'A GitHub API token. This must be provided if running the action on a pull request from a private repository. It can be provided in a GitHub workflow as ${{ secrets.GITHUB_TOKEN }}'
+    description: 'A GitHub API token. This must be provided if running the action on a pull request from a private repository.'
     required: false
     default: ''
   header:
