@@ -182,7 +182,7 @@ optional arguments:
 ```
 
 ### GitHub workflows
-The checker be can easily used as a step in a GitHub workflow. You can add it like this:
+The checker can be easily used as a step in a GitHub workflow. You can add it like this:
 
 ```yaml
 - uses: actions/checkout@v3
