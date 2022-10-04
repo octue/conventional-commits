@@ -6,24 +6,24 @@
 
 This package enables continuous deployment using [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 via two GitHub actions and a `pre-commit` hook:
-- A `commit-msg`-type [`pre-commit`](https://pre-commit.com) hook that checks if the current commit message adheres to
-the Conventional Commit standard.
 - A [semantic version](https://semver.org/) checker that uses [`git-mkver`](https://github.com/idc101/git-mkver) to
 predict what the version of the package should be as of the `HEAD` commit and checks if this matches the version as
 currently stated in a `setup.py`, `setup.cfg`, `pyproject.toml`, or `package.json` file.
 - A pull request description generator that categorises all the commit messages in a pull request and compiles them into
   a well-formatted description ready to be used as release notes. These can be used to automatically update a section of
   the pull request description on every push while leaving the rest of the description as-is.
+- A `commit-msg`-type [`pre-commit`](https://pre-commit.com) hook that checks if the current commit message adheres to
+the Conventional Commit standard.
 
-The last two of these can be used in GitHub workflows and combined with an automatic release-on-pull-request-merge
-workflow to facilitate continuous deployment of correctly semantically-versioned code changes to your users (as long as
-all contributers categorise their commits correctly as breaking changes, new features, and bug-fixes/small-changes).
-Examples of workflows that do this are linked below. You can find an example release workflow
-[here](.github/workflows/release.yml).
+The GitHub actions can be combined with an automatic release-on-pull-request-merge workflow to facilitate continuous
+deployment of correctly semantically-versioned code changes to your users (as long as all contributers categorise their
+commits correctly as breaking changes, new features, and bug-fixes/small-changes). Examples of workflows that do this
+are linked below. You can find an example release workflow [here](.github/workflows/release.yml).
 
 ## Contents
 * [Commit message pre-commit hook](#conventional-commit-message-pre-commit-hook)
-* [Semantic version checker](#semantic-version-checker)
+* [Semantic version checker](https://github.com/octue/check-semantic-verison) - **this has now been moved to its own
+  repository**
 * [Pull request description generator](https://github.com/octue/generate-pull-request-description) - **this has now been
   moved to its own repository**
 
@@ -129,70 +129,3 @@ d528edd OPS: Use version of hook specified in this repo locally
 5b5727c IMP: Allow options to be passed to hook
 86e07c5 CLN: Apply pre-commit checks to all files
 ```
-
-
-## Semantic version checker
-
-### Description
-
-#### What is it?
-A command-line tool that compares the semantic version specified in the given type of "version source" file against the
-semantic version expected due to the commits since the last tagged version in the git history. This is determined
-according to the mandatory `git-mkver` configuration file in the working directory. If the version source file and the
-expected version agree, the checker exits with a zero return code and displays a success message. If they don't agree,
-it exits with a non-zero return code and displays an error message.
-
-#### Example
-For [this standard configuration file](examples/semantic_version_checker/mkver.conf), if the last tagged version in your
-repository is `0.7.3` and since then:
-* There has been a breaking change and any number of features or bug-fixes/small-changes, the expected version will
-  be `1.0.0`
-* There has been a new feature, any number of bug-fixes/small-changes, but no breaking changes, the expected
-  version will be `0.8.0`
-* There has been a bug-fix/small-change but no breaking changes or new features, the expected version will be `0.7.4`
-
-#### Version source files
-A version source file is one of the following, which must contain the package version:
-* `setup.py` (this covers versions defined in a `setup.py` or `setup.cfg` file)
-* `pyproject.toml`
-* `package.json`
-
-If the version source file is not in the root directory, an optional argument can be passed to the checker to tell it to
-look at a file of the version source file type at a different location.
-
-#### Extra requirements
-Note that this command requires:
-* `git-mkver` to be installed and available in the shell as `git-mkver`
-* A `mkver.conf` file to be present in the working directory (usually the repository root):
-  - [See an example for non-beta packages](examples/semantic_version_checker/mkver.conf) (full semantic versioning)
-  - [See an example for packages in beta](examples/semantic_version_checker/mkver-for-beta-versions.conf) (keeps the version below `1.0.0`)
-
-
-### Usage
-```shell
-usage: check-semantic-version [-h] [--file FILE] {setup.py,pyproject.toml,package.json}
-
-positional arguments:
-  {setup.py,pyproject.toml,package.json}
-                        The type of file to look for the version in. It must be one of ['setup.py', 'pyproject.toml', 'package.json'] and is assumed to be in the
-                        repository root unless the --file option is also given
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --file FILE           The path to the version source file if it isn't in the repository root e.g. path/to/setup.py
-```
-
-### GitHub workflows
-The checker can be easily used as a step in a GitHub workflow. You can add it like this:
-
-```yaml
-- uses: actions/checkout@v3
-  with:
-    # Set fetch-depth to 0 to fetch all tags (necessary for git-mkver to determine the correct semantic version).
-    fetch-depth: 0
-- uses: octue/conventional-commits/check-semantic-version@0.7.1
-  with:
-    version_source_type: setup.py
-```
-
-See [here](examples/semantic_version_checker/workflow.yml) for an example in a workflow.
