@@ -76,6 +76,11 @@ class ReleaseNotesCompiler:
         commit_codes_to_headings_mapping=None,
         include_link_to_pull_request=True,
     ):
+        logger.warning(
+            "A GitHub action is now available at https://github.com/octue/generate-pull-request-description. Please "
+            "switch to using it as the version here is deprecated and will be removed soon."
+        )
+
         if stop_point.upper() not in STOP_POINTS:
             raise ValueError(f"`stop_point` must be one of {STOP_POINTS!r}; received {stop_point!r}.")
 
