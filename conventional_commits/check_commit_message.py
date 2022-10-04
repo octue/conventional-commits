@@ -210,7 +210,7 @@ def main(argv=None):
     parser.add_argument("--maximum-header-length", default=72, type=int)
     parser.add_argument("--valid-header-ending-pattern", default=r"[A-Za-z\d]", type=str)
     parser.add_argument("--require-body", default=False, type=bool)
-    parser.add_argument("--maximum-body-line-length", default=72, type=int)
+    parser.add_argument("--maximum-body-line-length", default=10000, type=int)
 
     args = parser.parse_args(argv)
 
