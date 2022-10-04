@@ -652,7 +652,7 @@ class TestReleaseNotesCompiler(unittest.TestCase):
                     )
 
                     self.assertEqual(logging_context.records[0].levelname, "WARNING")
-                    self.assertEqual(logging_context.records[1].message, "Using 'LAST_RELEASE' stop point.")
+                    self.assertEqual(logging_context.records[2].message, "Using 'LAST_RELEASE' stop point.")
 
             compiler.compile_release_notes()
 
