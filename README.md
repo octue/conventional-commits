@@ -23,7 +23,7 @@ are linked below. You can find an example release workflow [here](.github/workfl
 
 ## Contents
 * [Commit message pre-commit hook](#conventional-commit-message-pre-commit-hook)
-* [Semantic version checker](https://github.com/octue/check-semantic-verison) - **this has now been moved to its own
+* [Semantic version checker](https://github.com/octue/check-semantic-version) - **this has now been moved to its own
   repository**
 * [Pull request description generator](https://github.com/octue/generate-pull-request-description) - **this has now been
   moved to its own repository**
