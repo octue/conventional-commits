@@ -1,4 +1,4 @@
-name: Release the package on merge into main
+name: Release
 
 # Only trigger when a pull request into main branch is closed.
 on:

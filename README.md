@@ -1,3 +1,4 @@
+[![Release](https://github.com/octue/conventional-commits/actions/workflows/release.yml/badge.svg)](https://github.com/octue/conventional-commits/actions/workflows/release.yml)
 [![codecov](https://codecov.io/gh/octue/conventional-commits/branch/main/graph/badge.svg?token=IE19ANFKET)](https://codecov.io/gh/octue/conventional-commits)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
