@@ -1,14 +1,16 @@
 import argparse
 import copy
+import logging
 import os
 import subprocess
 import sys
 
 
+logger = logging.getLogger(__name__)
+
 RED = "\033[0;31m"
 GREEN = "\033[0;32m"
 NO_COLOUR = "\033[0m"
-
 
 VERSION_PARAMETERS = {
     "setup.py": [["python", "setup.py", "--version"], False],
@@ -67,6 +69,11 @@ def main(argv=None):
 
     :return None:
     """
+    logger.warning(
+        "A GitHub action is now available at https://github.com/octue/check-semantic-version. Please switch to using "
+        "it as the version here is deprecated and will be removed soon."
+    )
+
     if not os.path.exists("mkver.conf"):
         raise FileNotFoundError(
             "A mkver.conf file is required in the current working directory (usually the repository root) in order to "
