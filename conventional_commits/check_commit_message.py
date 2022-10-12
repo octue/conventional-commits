@@ -28,6 +28,11 @@ BREAKING_CHANGE_PATTERN = rf"({'|'.join(BREAKING_CHANGE_INDICATORS)}): ([A-Za-z\
 RED = "\033[0;31m"
 NO_COLOUR = "\033[0m"
 
+DEFAULT_MAXIMUM_HEADER_LENGTH = 72
+DEFAULT_VALID_HEADER_ENDING_PATTERN = r"[A-Za-z\d\"\'\s)`]"
+DEFAULT_REQUIRE_BODY = False
+DEFAULT_MAXIMUM_BODY_LINE_LENGTH = 10000
+
 
 class ConventionalCommitMessageChecker:
     """A class that checks whether the given commit message adheres to Conventional Commits standard, as well as the
@@ -64,10 +69,10 @@ class ConventionalCommitMessageChecker:
     def __init__(
         self,
         allowed_commit_codes=None,
-        maximum_header_length=72,
-        valid_header_ending_pattern=r"[A-Za-z\d\"\'\s)`]",
-        require_body=False,
-        maximum_body_line_length=10000,
+        maximum_header_length=DEFAULT_MAXIMUM_HEADER_LENGTH,
+        valid_header_ending_pattern=DEFAULT_VALID_HEADER_ENDING_PATTERN,
+        require_body=DEFAULT_REQUIRE_BODY,
+        maximum_body_line_length=DEFAULT_MAXIMUM_BODY_LINE_LENGTH,
     ):
         self.allowed_commit_codes = allowed_commit_codes or ALLOWED_COMMIT_CODES
         self.maximum_header_length = maximum_header_length
@@ -207,10 +212,10 @@ def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--allowed-commit-codes", default=None)
     parser.add_argument("--additional-commit-codes", default=None)
-    parser.add_argument("--maximum-header-length", default=72, type=int)
-    parser.add_argument("--valid-header-ending-pattern", default=r"[A-Za-z\d]", type=str)
-    parser.add_argument("--require-body", default=False, type=bool)
-    parser.add_argument("--maximum-body-line-length", default=10000, type=int)
+    parser.add_argument("--maximum-header-length", default=DEFAULT_MAXIMUM_HEADER_LENGTH, type=int)
+    parser.add_argument("--valid-header-ending-pattern", default=DEFAULT_VALID_HEADER_ENDING_PATTERN, type=str)
+    parser.add_argument("--require-body", default=DEFAULT_REQUIRE_BODY, type=bool)
+    parser.add_argument("--maximum-body-line-length", default=DEFAULT_MAXIMUM_BODY_LINE_LENGTH, type=int)
 
     args = parser.parse_args(argv)
 
