@@ -148,7 +148,7 @@ class ConventionalCommitMessageChecker:
                 f"{CODE_SEPARATOR!r}. Received {header!r}."
             )
 
-        if len(header) > self.maximum_header_length:
+        if len(header) > self.maximum_header_length and not header.startswith("MRG"):
             raise ValueError(
                 f"The commit header should be no longer than {self.maximum_header_length} characters; received "
                 f"{header!r}, which is {len(header)} characters long."

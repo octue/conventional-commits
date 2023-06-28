@@ -5,8 +5,7 @@
 
 # Continuous deployment via Conventional Commits
 
-This package enables continuous deployment using [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
-via two GitHub actions and a `pre-commit` hook:
+This repository contains three tools enabling continuous deployment using [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) - two GitHub actions and a `pre-commit` hook:
 - A [semantic version](https://semver.org/) checker that uses [`git-mkver`](https://github.com/idc101/git-mkver) to
 predict what the version of the package should be as of the `HEAD` commit and checks if this matches the version as
 currently stated in a `setup.py`, `setup.cfg`, `pyproject.toml`, or `package.json` file.
