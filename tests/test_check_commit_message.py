@@ -34,6 +34,12 @@ class TestCheckCommitMessage(unittest.TestCase):
         with self.assertRaises(ValueError):
             ConventionalCommitMessageChecker().check_commit_message([f"IMP: {'a' * 80}"])
 
+    def test_merge_commit_header_over_maximum_length_does_not_raise_error(self):
+        """Test that a merge commit message with a header that is longer than the header length limit doesn't result in
+        an error.
+        """
+        ConventionalCommitMessageChecker().check_commit_message([f"MRG: {'a' * 80}"])
+
     def test_invalid_header_ending_raises_error(self):
         """Test that a commit message with a header with an invalid ending results in an error."""
         with self.assertRaises(ValueError):
