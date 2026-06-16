@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Generate pull request description
         uses: octue/generate-pull-request-description@1.0.0.beta-2
         id: pr-description
