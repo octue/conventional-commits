@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "conventional-commits"
+version = "0.9.1"
+description = "A pre-commit hook for checking commit messages adhere to the Conventional Commits standard."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.9"
+authors = [{ name = "Octue" }]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+]
+
+[project.urls]
+Homepage = "https://github.com/octue/conventional-commits"
+
+[project.scripts]
+check-commit-message = "conventional_commits.check_commit_message:main"
+
+[dependency-groups]
+dev = [
+    "coverage",
+    "pytest",
+]
+
+[tool.setuptools.packages.find]
+exclude = ["tests*", "docs*"]
+
+[tool.isort]
+line_length = 120
+default_section = "THIRDPARTY"
+known_third_party = ["requests", "jsonschema"]
+known_first_party = ["conventional_commits"]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+no_lines_before = ["LOCALFOLDER"]
+lines_after_imports = 2
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+combine_as_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.flake8]
+max-line-length = 120
+exclude = ".tox,.git,*/migrations/*,*/static/CACHE/*,docs,node_modules,build"
+ignore = ["F405", "E501", "W503"]

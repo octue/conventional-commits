@@ -11,27 +11,29 @@ jobs:
   tests:
     if: "github.event.pull_request.merged == true"
     runs-on: ubuntu-latest
-    env:
-      USING_COVERAGE: '3.8'
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
 
       - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.8
+        run: uv python install 3.12
 
-      - name: Install tox
-        run: pip install tox
+      - name: Install dependencies
+        run: uv sync
 
-      - name: Run tests
-        run: tox
+      - name: Run tests with coverage
+        run: |
+          uv run coverage run --source conventional_commits -m pytest
+          uv run coverage report --show-missing
+          uv run coverage xml
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v5
         with:
-          file: coverage.xml
+          files: coverage.xml
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -39,18 +41,18 @@ jobs:
     runs-on: ubuntu-latest
     needs: tests
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-    - name: Get package version
-      run: echo "PACKAGE_VERSION=$(python setup.py --version)" >> $GITHUB_ENV
+      - name: Get package version
+        run: |
+          VERSION=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
 
-    - name: Create Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, no need to create your own.
-      with:
-        tag_name: ${{ env.PACKAGE_VERSION }}
-        release_name: ${{ github.event.pull_request.title }}
-        body: ${{ github.event.pull_request.body }}
-        draft: false
-        prerelease: false
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.PACKAGE_VERSION }}
+          name: ${{ github.event.pull_request.title }}
+          body: ${{ github.event.pull_request.body }}
+          draft: false
+          prerelease: false
