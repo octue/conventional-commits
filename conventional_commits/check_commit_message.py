@@ -1,5 +1,7 @@
 import argparse
+import os
 import re
+import subprocess
 
 
 ALLOWED_COMMIT_CODES = {
@@ -200,8 +202,12 @@ def main(argv=None):
     :param iter(str)|None argv: iterable containing single argument, which should be the path to a git commit message
     :return int: the return code - 0 if the message passes, 1 if it fails
     """
+    git_dir = subprocess.run(["git", "rev-parse", "--git-dir"], capture_output=True).stdout.decode().strip()
+
+    with open(os.path.join(git_dir, "COMMIT_EDITMSG")) as f:
+        commit_message_lines = f.read().splitlines()
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("commit_message_file", help="Path to the file containing the commit message")
     parser.add_argument("--allowed-commit-codes", default=None)
     parser.add_argument("--additional-commit-codes", default=None)
     parser.add_argument("--maximum-header-length", default=DEFAULT_MAXIMUM_HEADER_LENGTH, type=int)
@@ -210,9 +216,6 @@ def main(argv=None):
     parser.add_argument("--maximum-body-line-length", default=DEFAULT_MAXIMUM_BODY_LINE_LENGTH, type=int)
 
     args = parser.parse_args(argv)
-
-    with open(args.commit_message_file) as f:
-        commit_message_lines = f.read().splitlines()
 
     try:
         if args.allowed_commit_codes:
