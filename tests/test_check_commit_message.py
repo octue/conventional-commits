@@ -156,14 +156,14 @@ class TestMain(unittest.TestCase):
     def test_with_invalid_commit_message(self):
         """Test that an error is raised by the entrypoint when an invalid commit message is given."""
         with patch("builtins.open", mock_open(read_data="blah\nawful commit message")):
-            return_code = main()
+            return_code = main(["COMMIT_EDITMSG"])
 
         self.assertEqual(return_code, 1)
 
     def test_with_valid_commit_message(self):
         """Test that the entrypoint works with a valid commit message."""
         with patch("builtins.open", mock_open(read_data="FIX: Fix a bug")):
-            return_code = main()
+            return_code = main(["COMMIT_EDITMSG"])
 
         self.assertEqual(return_code, 0)
 
@@ -174,12 +174,12 @@ class TestMain(unittest.TestCase):
         # Ensure the custom commit codes work.
         for code in custom_commit_codes:
             with patch("builtins.open", mock_open(read_data=f"{code}: Do a thing")):
-                return_code = main([f"--allowed-commit-codes={','.join(custom_commit_codes)}"])
+                return_code = main(["COMMIT_EDITMSG", f"--allowed-commit-codes={','.join(custom_commit_codes)}"])
                 self.assertEqual(return_code, 0)
 
         # Ensure a default code now fails.
         with patch("builtins.open", mock_open(read_data="DOC: Update docs")):
-            return_code = main([f"--allowed-commit-code={','.join(custom_commit_codes)}"])
+            return_code = main(["COMMIT_EDITMSG", f"--allowed-commit-code={','.join(custom_commit_codes)}"])
             self.assertEqual(return_code, 1)
 
     def test_with_additional_allowed_commit_codes(self):
@@ -188,38 +188,38 @@ class TestMain(unittest.TestCase):
 
         # Ensure the additional code works.
         with patch("builtins.open", mock_open(read_data="ABC: Do a thing")):
-            return_code = main([f"--additional-commit-codes={additional_code}"])
+            return_code = main(["COMMIT_EDITMSG", f"--additional-commit-codes={additional_code}"])
             self.assertEqual(return_code, 0)
 
         # Ensure a default code still works.
         with patch("builtins.open", mock_open(read_data="DOC: Update docs")):
-            return_code = main([f"--additional-commit-codes={additional_code}"])
+            return_code = main(["COMMIT_EDITMSG", f"--additional-commit-codes={additional_code}"])
             self.assertEqual(return_code, 0)
 
     def test_with_maximum_header_length_violated(self):
         """Test an error is raised when the specified maximum header length is violated."""
         with patch("builtins.open", mock_open(read_data="FIX: Fix a bug")):
-            return_code = main(["--maximum-header-length=1"])
+            return_code = main(["COMMIT_EDITMSG", "--maximum-header-length=1"])
 
         self.assertEqual(return_code, 1)
 
     def test_with_valid_header_ending_pattern_violated(self):
         """Test an error is raised when the specified header-ending-pattern is violated."""
         with patch("builtins.open", mock_open(read_data="FIX: Fix a bug")):
-            return_code = main(["--valid-header-ending-pattern=@"])
+            return_code = main(["COMMIT_EDITMSG", "--valid-header-ending-pattern=@"])
 
         self.assertEqual(return_code, 1)
 
     def test_with_require_body_violated(self):
         """Test an error is raised when a body is not provided when it is required."""
         with patch("builtins.open", mock_open(read_data="FIX: Fix a bug")):
-            return_code = main(["--require-body=1"])
+            return_code = main(["COMMIT_EDITMSG", "--require-body=1"])
 
         self.assertEqual(return_code, 1)
 
     def test_with_maximum_body_line_length_violated(self):
         """Test an error is raised when the specified maximum body line length is violated."""
         with patch("builtins.open", mock_open(read_data="FIX: Fix a bug\n\nhello")):
-            return_code = main(["--maximum-body-line-length=1"])
+            return_code = main(["COMMIT_EDITMSG", "--maximum-body-line-length=1"])
 
         self.assertEqual(return_code, 1)
